@@ -22,12 +22,19 @@ External libraries/services used
 --------------------------------
 
 clightning_ndk_build (https://github.com/hihidev/clightning_ndk_build)
+
 bitcoin_ndk_build (https://github.com/hihidev/bitcoin_ndk_build)
+
 ZXing Android Embedded (https://github.com/journeyapps/zxing-android-embedded)
+
 ZXing (https://github.com/zxing/zxing)
+
 bitcoin-rpc-client (https://github.com/Polve/bitcoin-rpc-client)
+
 Apache Common
+
 Google Material Design
+
 utxo snapshots from btcpayserver (https://github.com/btcpayserver/btcpayserver-docker/tree/master/contrib/FastSync)
 
 
