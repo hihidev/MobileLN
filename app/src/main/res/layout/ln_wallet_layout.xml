@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+            <android.support.v7.widget.CardView android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginBottom="10dp"
+                                                android:layout_marginLeft="20dp"
+                                                android:layout_marginRight="20dp"
+                                                android:layout_marginTop="40dp"
+                                                card_view:cardBackgroundColor="@color/colorCardBg"
+                                                card_view:cardElevation="3dp">
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="match_parent"
+                              android:layout_gravity="center"
+                              android:orientation="vertical">
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/total_balance_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:gravity="center"
+                        android:text="Total Balance"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:typeface="sans"/>
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/total_balance_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:gravity="center"
+                        android:text="-----"
+                        android:textSize="54sp"
+                        android:textStyle="bold"
+                        android:typeface="sans"/>
+                    <LinearLayout android:layout_width="match_parent"
+                                  android:layout_height="wrap_content"
+                                  android:orientation="horizontal"
+                                  android:weightSum="2.0">
+                        <android.support.v7.widget.CardView android:layout_width="wrap_content"
+                                                            android:layout_height="wrap_content"
+                                                            android:layout_marginBottom="10dp"
+                                                            android:layout_marginLeft="10dp"
+                                                            android:layout_marginRight="20dp"
+                                                            android:layout_marginTop="10dp"
+                                                            android:layout_weight="1.0"
+                                                            card_view:cardBackgroundColor="@color/colorCardBg"
+                                                            card_view:cardElevation="3dp">
+                            <RelativeLayout android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_gravity="center"
+                                            android:gravity="center">
+                                <android.support.v7.widget.AppCompatTextView
+                                    android:id="@+id/channel_balance_title"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:gravity="center"
+                                    android:text="Channel Balance"
+                                    android:textSize="18sp"
+                                    android:typeface="sans"/>
+                                <android.support.v7.widget.AppCompatTextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/channel_balance_content"
+                                    android:layout_below="@+id/channel_balance_title"
+                                    android:layout_margin="5dp"
+                                    android:gravity="center"
+                                    android:text="-----"
+                                    android:textSize="24sp"
+                                    android:typeface="sans"/>
+                            </RelativeLayout>
+                        </android.support.v7.widget.CardView>
+                        <android.support.v7.widget.CardView android:layout_width="wrap_content"
+                                                            android:layout_height="wrap_content"
+                                                            android:layout_marginBottom="10dp"
+                                                            android:layout_marginLeft="10dp"
+                                                            android:layout_marginRight="20dp"
+                                                            android:layout_marginTop="10dp"
+                                                            android:layout_weight="1.0"
+                                                            card_view:cardBackgroundColor="@color/colorCardBg"
+                                                            card_view:cardElevation="3dp">
+                            <RelativeLayout android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_gravity="center"
+                                            android:gravity="center">
+                                <android.support.v7.widget.AppCompatTextView
+                                    android:id="@+id/chain_balance_title"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:gravity="center"
+                                    android:text="Chain Balance"
+                                    android:textSize="18sp"
+                                    android:typeface="sans"/>
+                                <android.support.v7.widget.AppCompatTextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/chain_balance_content"
+                                    android:layout_below="@+id/chain_balance_title"
+                                    android:layout_margin="5dp"
+                                    android:gravity="center"
+                                    android:text="-----"
+                                    android:textSize="24sp"
+                                    android:typeface="sans"/>
+                            </RelativeLayout>
+                        </android.support.v7.widget.CardView>
+                    </LinearLayout>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+            <android.support.design.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button"
+                android:id="@+id/manage_channel_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:minWidth="200dp"
+                android:text="Manage Channel"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorAccent"
+                app:cornerRadius="32dp"
+            />
+            <android.support.design.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button"
+                android:id="@+id/manage_on_chain_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:minWidth="200dp"
+                android:text="On Chain Wallet"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorAccent"
+                app:cornerRadius="32dp"
+            />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>

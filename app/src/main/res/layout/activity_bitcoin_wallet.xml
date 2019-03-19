@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.AppCompatTextView android:layout_width="match_parent"
+                                                         android:layout_height="wrap_content"
+                                                         android:gravity="center"
+                                                         android:textSize="17sp"
+                                                         android:text="@string/btc_wallet_balance"/>
+
+            <android.support.v7.widget.AppCompatTextView android:layout_width="match_parent"
+                                                         android:layout_height="wrap_content"
+                                                         android:gravity="center"
+                                                         android:textSize="35sp"
+                                                         android:id="@+id/btc_wallet_balance_textview"
+                                                         android:text=""/>
+
+            <android.support.v7.widget.AppCompatTextView android:layout_width="match_parent"
+                                                         android:layout_height="wrap_content"
+                                                         android:gravity="center"
+                                                         android:textSize="17sp"
+            android:text="@string/wallet_deposit_address_title"/>
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/receive_payment_bitcoin_imageview"
+                       android:layout_width="350dp"
+                       android:layout_height="350dp"
+                       android:layout_gravity="center"
+                       android:layout_margin="30dp"/>
+
+            <android.support.design.button.MaterialButton android:id="@+id/receive_my_btc_address_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="30dp" android:gravity="center"
+                    android:maxLines="1"
+                    android:minWidth="200dp"
+            />
+            <RelativeLayout android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                <ImageView android:layout_width="30dp" android:layout_height="30dp" android:src="@drawable/camera_icon" android:layout_alignParentRight="true" android:id="@+id/btc_withdrawal_camera_btn"/>
+                <android.support.design.widget.TextInputLayout
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@id/btc_withdrawal_camera_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btc_withdrawal_address"
+                        android:hint="@string/withdraw_btc_address"/>
+
+                </android.support.design.widget.TextInputLayout>
+            </RelativeLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btc_withdrawal_amount"
+                    android:hint="@string/withdraw_btc_amount"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.button.MaterialButton android:id="@+id/btc_withdrawal_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="30dp" android:gravity="center"
+                    android:maxLines="1"
+                    android:text="Withdraw"
+                    android:minWidth="200dp"
+            />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

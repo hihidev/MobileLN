@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="45dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/receive_payment_qr_linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView android:id="@+id/receive_payment_qr_imageview"
+                           android:layout_width="350dp"
+                           android:layout_height="350dp"
+                           android:layout_gravity="center"
+                           android:adjustViewBounds="true"
+                           android:scaleType="center"
+                           />
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/receive_payment_amount_textview"
+                        android:enabled="false"
+                        android:hint="@string/pay_amount"/>
+
+                </android.support.design.widget.TextInputLayout>
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/receive_payment_description_textview"
+                        android:enabled="false"
+                        android:hint="@string/pay_description"/>
+
+                </android.support.design.widget.TextInputLayout>
+                <Button android:id="@+id/receive_my_address_button"
+                        style="@android:style/Widget.Holo.Button.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="30dp" android:gravity="center"
+                        android:maxLines="1"
+                        android:minWidth="200dp"
+                />
+            </LinearLayout>
+            <android.support.design.button.MaterialButton
+                android:id="@+id/generate_new_invoice_btn"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_gravity="center"
+                android:textSize="18sp"
+                app:backgroundTint="@color/colorAccent"
+                app:cornerRadius="32dp"
+                android:text="Click to generate a new invoice."/>
+            <LinearLayout android:id="@+id/payment_received_list"
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:background="@android:color/white"
+                          android:gravity="top"
+                          android:orientation="vertical">
+                <include layout="@layout/ln_receive_payment_layout_item" android:visibility="gone"/>
+                <include layout="@layout/ln_receive_payment_layout_item" android:visibility="gone"/>
+                <include layout="@layout/ln_receive_payment_layout_item" android:visibility="gone"/>
+                <include layout="@layout/ln_receive_payment_layout_item" android:visibility="gone"/>
+                <include layout="@layout/ln_receive_payment_layout_item" android:visibility="gone"/>
+                <include layout="@layout/ln_receive_payment_layout_item" android:visibility="gone"/>
+                <include layout="@layout/ln_receive_payment_layout_item" android:visibility="gone"/>
+                <include layout="@layout/ln_receive_payment_layout_item" android:visibility="gone"/>
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="200dp"/>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>

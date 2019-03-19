@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3300AAFF</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#95a5f1</color>
+    <color name="colorChooseBitcoin">#cb71cc</color>
+    <color name="colorChooseLightning">#95f1e6</color>
+
+    <color name="colorBg">#cceeff</color>
+    <color name="colorCardBg2">#7bc1c4f2</color>
+    <color name="colorCardBg">#00000000</color>
+</resources>

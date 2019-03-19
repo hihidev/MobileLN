@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBg"
+    tools:context=".MainActivity">
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        app:itemIconTint="@drawable/nav_item_color_state"
+        app:itemTextColor="@drawable/nav_item_color_state"
+        app:itemBackground="@color/colorBg"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        app:menu="@menu/navigation"
+    />
+
+    <RelativeLayout
+        android:id="@+id/toolbar_top"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:background="@color/colorBg"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_alignParentTop="true">
+
+        <android.support.v7.widget.AppCompatImageView android:layout_width="wrap_content"
+                                                      android:layout_height="match_parent"
+                                                      android:layout_alignParentLeft="true"
+                                                      android:id="@+id/service_status_light_imageview"
+                                                      android:layout_margin="10dp"
+                                                      android:adjustViewBounds="true"
+                                                      android:src="@drawable/red_circle"/>
+
+        <android.support.v7.widget.AppCompatImageView android:layout_width="wrap_content"
+                                                      android:layout_height="match_parent"
+                                                      android:layout_alignParentRight="true"
+                                                      android:id="@+id/wallet_settings_imageview"
+                                                      android:layout_margin="10dp"
+                                                      android:adjustViewBounds="true"
+                                                      android:src="@drawable/settings_icon"/>
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tvTitle"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:layout_gravity="center"
+            android:gravity="center"
+        />
+
+    </RelativeLayout>
+
+    <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+                                                 android:layout_height="match_parent"
+                                                 android:layout_below="@id/toolbar_top"
+                                                 android:layout_alignParentLeft="true"
+                                                 android:layout_alignParentRight="true"
+                                                 android:layout_above="@id/navigation"
+                                                 android:id="@+id/main_container">
+    </android.support.constraint.ConstraintLayout>
+
+</RelativeLayout>

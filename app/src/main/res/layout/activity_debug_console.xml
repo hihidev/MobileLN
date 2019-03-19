@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView android:id="@+id/debug_console_name" android:layout_width="80dp"
+              android:layout_height="40dp" android:layout_alignParentBottom="true"
+              android:textSize="15sp"
+              android:gravity="center"
+              android:layout_alignParentLeft="true"/>
+    <Button android:layout_width="50dp" android:layout_height="wrap_content" android:id="@+id/debug_console_ok_btn" android:layout_alignParentBottom="true"  android:layout_alignParentRight="true" android:text="@android:string/ok"/>
+    <EditText android:id="@+id/debug_console_arguments" android:layout_width="match_parent"
+              android:layout_height="40dp" android:layout_alignParentBottom="true" android:layout_toLeftOf="@id/debug_console_ok_btn"
+              android:textSize="15sp"
+              android:hint="Arguments"
+              android:layout_toRightOf="@id/debug_console_name"/>
+    <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_above="@id/debug_console_arguments"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:gravity="bottom"
+    >
+
+    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+              android:id="@+id/debug_console_result"
+              android:scrollbars="vertical"
+              android:gravity="bottom"/>
+    </ScrollView>
+</RelativeLayout>
