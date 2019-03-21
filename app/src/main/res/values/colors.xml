@@ -6,7 +6,9 @@
     <color name="colorChooseBitcoin">#cb71cc</color>
     <color name="colorChooseLightning">#95f1e6</color>
 
-    <color name="colorBg">#cceeff</color>
+    <color name="colorBg">#f1faff</color>
     <color name="colorCardBg2">#7bc1c4f2</color>
     <color name="colorCardBg">#00000000</color>
+    <color name="colorBg4">#cea671</color>
+    <color name="colorBg3">#5aed93</color>
 </resources>
