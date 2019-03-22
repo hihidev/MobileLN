@@ -1,5 +1,6 @@
 package com.mobileln.ui;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -41,6 +43,7 @@ import com.mobileln.utils.QRUtils;
 public class ReceiveFragment extends Fragment {
 
     private static final String TAG = "ReceiveFragment";
+    private static final long PAYMENT_LISTENER_INTERVAL_MS = 500;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ImageView mQRImageView;
@@ -50,6 +53,8 @@ public class ReceiveFragment extends Fragment {
     private EditText mAmountEditText;
     private EditText mDescriptionEditText;
     private Button mGenerateInvoiceBtn;
+    private String mLabelPendingPayment = null;
+    private boolean mPaymentListenerRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,6 +99,20 @@ public class ReceiveFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mLabelPendingPayment != null) {
+            registerPaymentReceivedListener(mLabelPendingPayment);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterPaymentReceivedListener();
+    }
+
     private void showGenerateInvoiceDialog() {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.generate_invoice, null);
@@ -133,6 +152,7 @@ public class ReceiveFragment extends Fragment {
                     return;
                 }
                 updateQRImage(bolt11, amount, description);
+                registerPaymentReceivedListener(description);
             }
         }.execute();
     }
@@ -146,10 +166,18 @@ public class ReceiveFragment extends Fragment {
             mGenerateInvoiceBtn.setVisibility(View.GONE);
             mAmountEditText.setText(String.valueOf(amount));
             mDescriptionEditText.setText(description);
+            mLabelPendingPayment = description;
             updateReceivedPaymentAsync();
         } catch (WriterException e) {
             e.printStackTrace();
         }
+    }
+
+    private void clearPendingPayment() {
+        mQRLinearLayout.setVisibility(View.GONE);
+        mGenerateInvoiceBtn.setVisibility(View.VISIBLE);
+        mLabelPendingPayment = null;
+        updateReceivedPaymentAsync();
     }
 
     private void updateReceivedPaymentAsync() {
@@ -204,6 +232,7 @@ public class ReceiveFragment extends Fragment {
                                 if (!paymentInfo.completed) {
                                     updateQRImage(paymentInfo.bolt11, paymentInfo.satAmount,
                                             paymentInfo.description);
+                                    registerPaymentReceivedListener(paymentInfo.description);
                                 }
                             }
                         });
@@ -219,5 +248,48 @@ public class ReceiveFragment extends Fragment {
                 }
             }
         }.execute();
+    }
+
+    private void registerPaymentReceivedListener(final String label) {
+        // TODO: Race condition?
+        if (mPaymentListenerRunning) {
+            return;
+        }
+        mPaymentListenerRunning = true;
+        new Thread() {
+            public void run() {
+                while(mPaymentListenerRunning) {
+                    try {
+                        final PaymentInfo paymentInfo =  LightningCli.newInstance().getInvoiceInfo(label);
+                        if (paymentInfo.completed) {
+                            unregisterPaymentReceivedListener();
+                            Activity activity = getActivity();
+                            if (activity == null) {
+                                return;
+                            }
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new AlertDialog.Builder(getContext()).setTitle(
+                                            "Payment").setMessage(
+                                            "Payment received!\nLabel:\t" + paymentInfo.description
+                                                    + "\nAmount:\t" + BtcSatUtils.sat2String(
+                                                    paymentInfo.satAmount)).setNeutralButton(
+                                            android.R.string.ok, null).show();
+                                    clearPendingPayment();
+                                }
+                            });
+                        }
+                    } catch (IOException|JSONException e) {
+                        e.printStackTrace();
+                    }
+                    SystemClock.sleep(PAYMENT_LISTENER_INTERVAL_MS);
+                }
+            }
+        }.start();
+    }
+
+    private void unregisterPaymentReceivedListener() {
+        mPaymentListenerRunning = false;
     }
 }

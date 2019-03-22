@@ -368,7 +368,7 @@ public class WalletFragment extends Fragment {
                 Pair<String, String> chainBal = BtcSatUtils.sat2StringPair(result.second);
                 Pair<String, String> totalBal = BtcSatUtils.sat2StringPair(result.first + result.second);
                 mChannelBalanceTextView.setText(channelBal.first);
-                mChannelBalanceUnitTextView.setText(chainBal.second);
+                mChannelBalanceUnitTextView.setText(channelBal.second);
                 mChainBalanceTextView.setText(chainBal.first);
                 mChainBalanceUnitTextView.setText(chainBal.second);
                 mTotalBalanceTextView.setText(totalBal.first);

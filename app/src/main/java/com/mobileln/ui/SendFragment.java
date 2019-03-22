@@ -253,8 +253,16 @@ public class SendFragment extends Fragment {
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setNeutralButton(android.R.string.ok, null)
                         .show();
+                clearPaymentDetails();
             }
         });
+    }
+
+    private void clearPaymentDetails() {
+        mAmountTextView.setText("------");
+        mDescriptionTextView.setText("------");
+        mValidInvoice = false;
+        mPayNowBtn.setEnabled(false);
     }
 
     private void showPaymentFailedResult(final String errorMsg) {

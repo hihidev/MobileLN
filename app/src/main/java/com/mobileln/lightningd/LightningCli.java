@@ -29,6 +29,7 @@ public class LightningCli extends ProcessHelper {
     public static LightningCli newInstance() {
         return newInstance(false);
     }
+
     public static LightningCli newInstance(boolean redirectError) {
         return new LightningCli(redirectError);
     }
@@ -214,6 +215,29 @@ public class LightningCli extends ProcessHelper {
     }
 
     @WorkerThread
+    public PaymentInfo getInvoiceInfo(String label) throws IOException, JSONException {
+        JSONObject json = getJSONResponse(MyApplication.getContext(),
+                new String[]{"listinvoices", label});
+        JSONArray invoices = json.getJSONArray("invoices");
+        int invoicesLen = invoices.length();
+        for (int i = 0; i < invoicesLen; i++) {
+            JSONObject obj = invoices.getJSONObject(i);
+            String status = obj.getString("status");
+            if (status.equals("expired")) {
+                continue;
+            }
+            boolean completed = "paid".equals(status);
+            long sat = obj.getLong("msatoshi") / 1000;
+            long paidAt = obj.optLong("paid_at", 0);
+            String description = obj.getString("description");
+            String bolt11 = obj.getString("bolt11");
+            String paymentHash = obj.getString("payment_hash");
+            return new PaymentInfo(description, bolt11, paymentHash, sat, completed, paidAt);
+        }
+        return null;
+    }
+
+    @WorkerThread
     public PaymentInfo getDecodedInvoice(String invoice) throws IOException, JSONException {
         JSONObject json = getJSONResponse(MyApplication.getContext(),
                 new String[]{"decodepay", invoice});
@@ -237,7 +261,8 @@ public class LightningCli extends ProcessHelper {
     public String withdrawBtc(String withdrawalAddr, long amount, boolean withdrawAll)
             throws IOException, JSONException {
         JSONObject json = getJSONResponse(MyApplication.getContext(),
-                new String[]{"withdraw", withdrawalAddr, withdrawAll ? "all" : String.valueOf(amount * 1000)});
+                new String[]{"withdraw", withdrawalAddr,
+                        withdrawAll ? "all" : String.valueOf(amount * 1000)});
         return json.getString("txid");
     }
 
