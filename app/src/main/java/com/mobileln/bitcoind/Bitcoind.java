@@ -6,6 +6,7 @@ import android.os.SystemClock;
 import java.io.IOException;
 import java.security.SecureRandom;
 
+import com.mobileln.BuildConfig;
 import com.mobileln.utils.FileUtils;
 import com.mobileln.utils.ProcessHelper;
 
@@ -14,7 +15,7 @@ public class Bitcoind extends ProcessHelper {
     private static final int BUFFER_SIZE = 100;
     private static final int START_SERVICE_MAX_RETRY = 10;
     private static final int START_SERVICE_RETRY_INTERVAL_MS = 300;
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
     private static final String ALPHABET =
             "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final Bitcoind INSTANCE = new Bitcoind();
@@ -47,7 +48,7 @@ public class Bitcoind extends ProcessHelper {
         if (isRunning()) {
             throw new IOException("Still running...return");
         }
-        if (DEBUG) {
+        if (DEBUG || BuildConfig.DEBUG) {
             mRpcUserName = "debugdebugdebug";
             mRpcPassowrd = "debugdebugdebug";
         } else {

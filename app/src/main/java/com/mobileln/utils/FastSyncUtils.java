@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.mobileln.BuildConfig;
+
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
@@ -50,7 +52,9 @@ public class FastSyncUtils {
                 Uri.parse(TESTNET_FASTSYNC_DB_URL))
                 .setTitle("fastsync_db")
                 .setNotificationVisibility(
-                        DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        BuildConfig.DEBUG
+                                ? DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
+                                : DownloadManager.Request.VISIBILITY_HIDDEN)
                 .setAllowedOverMetered(false)
                 .setAllowedOverRoaming(false);
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(
