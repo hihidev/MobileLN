@@ -102,6 +102,7 @@ public class LightningCli extends ProcessHelper {
             try {
                 return getJSONResponseInternal(context, args);
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return getJSONResponseInternal(context, args);
@@ -182,11 +183,13 @@ public class LightningCli extends ProcessHelper {
         PaymentInfo[] result = new PaymentInfo[payArrayLen];
         for (int i = 0; i < payArrayLen; i++) {
             JSONObject obj = payArray.getJSONObject(i);
+            String description = obj.optString("description");
+            String bolt11 = obj.optString("bolt11");
             String paymentHash = obj.getString("payment_hash");
             long sat = obj.getLong("msatoshi") / 1000;
             long createdAt = obj.getLong("created_at");
             boolean completed = "complete".equals(obj.getString("status"));
-            result[i] = new PaymentInfo(null, null, paymentHash, sat, completed, createdAt);
+            result[i] = new PaymentInfo(description, bolt11, paymentHash, sat, completed, createdAt);
         }
         return result;
     }
@@ -247,9 +250,11 @@ public class LightningCli extends ProcessHelper {
         return new PaymentInfo(description, invoice, paymentHash, amount, false, 0);
     }
 
+    // TODO: Support custom amount
     @WorkerThread
-    public PaymentInfo payInvoice(String invoice) throws IOException, JSONException {
-        JSONObject json = getJSONResponse(MyApplication.getContext(), new String[]{"pay", invoice});
+    public PaymentInfo payInvoice(String invoice, String label) throws IOException, JSONException {
+        JSONObject json = getJSONResponse(MyApplication.getContext(),
+                new String[]{"pay", invoice, "null", label});
         long amount = json.getLong("msatoshi") / 1000;
         long dateTime = json.getLong("created_at");
         String destination = json.getString("destination");

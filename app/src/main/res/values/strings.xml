@@ -5,15 +5,16 @@
     <string name="title_dashboard">Wallet</string>
     <string name="title_notifications">Send</string>
 
-    <string name="text_node_status_unkonwn">Status: Unknown</string>
-    <string name="text_node_status_disconnected">Status: Disconnected</string>
-    <string name="text_node_status_connecting_bitcoin">Status: Connecting Bitcoin…</string>
-    <string name="text_node_status_fast_sync_bitcoin">Status: Fast downloading blocks…</string>
-    <string name="text_node_status_syncing_bitcoin">Status: Syncing Bitcoin…</string>
-    <string name="text_node_status_starting_lightning">Status: Connecting Lightning…</string>
-    <string name="text_node_status_disconnecting">Status: Disconnecting</string>
-    <string name="text_node_status_online">Status: Online</string>
-    <string name="dialog_question_ln_service_title">LN node</string>
+    <string name="text_node_status_unkonwn">Unknown</string>
+    <string name="text_node_status_disconnected">Disconnected</string>
+    <string name="text_node_status_connecting_bitcoin">Connecting Bitcoin…</string>
+    <string name="text_node_status_fast_sync_bitcoin">Fast downloading blocks…</string>
+    <string name="text_node_status_syncing_bitcoin">Syncing Bitcoin…</string>
+    <string name="text_node_status_starting_lightning">Connecting Lightning…</string>
+    <string name="text_node_status_disconnecting">Disconnecting</string>
+    <string name="text_node_status_online">Online</string>
+    <string name="text_node_status_title">Mobile LN status</string>
+    <string name="dialog_question_ln_service_title">Mobile LN</string>
     <string name="dialog_question_setup_config">You haven\'t setup node config yet, do you want to use default config?</string>
     <string name="dialog_question_ln_service_turn_on">Do you want to turn on LN service? LN service will be running in background and sync all data.</string>
     <string name="dialog_question_ln_service_shutdown">Do you want to shutdown LN service? LN service will be stopped and no longer funds until you turn it back on.</string>
@@ -30,7 +31,7 @@
     <string name="create_channel_peer_address">Peer address</string>
     <string name="create_channel_amount_sat">Amount (SAT)</string>
     <string name="create_channel_btn">Create channel</string>
-    <string name="node_service_title">Mobile LN</string>
-    <string name="node_service_content_text">Mobile LN is running</string>
+    <string name="node_service_title">Mobile LN service is running</string>
+    <string name="node_service_content_text">Tap to open Mobile LN</string>
     <string name="wallet">Wallet</string>
 </resources>

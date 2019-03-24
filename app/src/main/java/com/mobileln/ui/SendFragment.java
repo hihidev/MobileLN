@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -163,7 +164,7 @@ public class SendFragment extends Fragment {
         }.execute();
     }
 
-    private void showConfirmPaymentDialog(final String invoice, String label, long amount) {
+    private void showConfirmPaymentDialog(final String invoice, final String label, long amount) {
         new AlertDialog.Builder(getContext())
                 .setTitle("Payment")
                 .setMessage("Description:\t" + label + "\n" + "Amount:\t" + BtcSatUtils.sat2String(amount) + "\n" + "Do you CONFIRM to pay this invoice?")
@@ -177,7 +178,8 @@ public class SendFragment extends Fragment {
                         new Thread() {
                             public void run() {
                                 try {
-                                    showPaymentSuccessResult(LightningCli.newInstance().payInvoice(invoice));
+                                    showPaymentSuccessResult(
+                                            LightningCli.newInstance().payInvoice(invoice, label));
                                 } catch (IOException | JSONException e) {
                                     showPaymentFailedResult(e.getMessage());
                                 }
@@ -224,7 +226,7 @@ public class SendFragment extends Fragment {
                         TextView referenceTextView = view.findViewById(R.id.receive_reference_textview);
                         PaymentInfo paymentInfo = paymentInfos[paymentCount - i - 1];
                         String description = paymentInfo.description;
-                        if (description == null) {
+                        if (TextUtils.isEmpty(description)) {
                             description = paymentInfo.paymentHash;
                         }
                         fromTextView.setText(description);

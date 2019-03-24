@@ -42,9 +42,9 @@ public class Lightningd extends ProcessHelper {
                 "--rpc-file=" + lightningRPCFile,
                 "--bitcoin-cli=" + bitcoinCliExecutable,
                 "--bitcoin-datadir=" + bitcoindDataFolderPath,
-                "--bitcoin-rpcport=" + Bitcoind.RPC_PORT,
                 "--bitcoin-rpcuser=" + Bitcoind.getInstance().getRpcUserName(),
-                "--bitcoin-rpcpassword=" + Bitcoind.getInstance().getRpcPassowrd());
+                "--bitcoin-rpcpassword=" + Bitcoind.getInstance().getRpcPassowrd(),
+                "--bitcoin-rpcport=" + Bitcoind.RPC_PORT);
         startProcess(context, TAG);
         LightningdState.getInstance().startMonitor();
     }

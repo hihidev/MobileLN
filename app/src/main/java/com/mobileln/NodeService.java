@@ -172,7 +172,7 @@ public class NodeService extends Service {
                 .setContentTitle(getString(R.string.node_service_title))
                 .setContentIntent(pendingIntent)
                 .setContentText(getString(R.string.node_service_content_text))
-                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setSmallIcon(R.drawable.ic_stat_flash)
                 .setOngoing(true);
 
         NotificationManager notificationManager =
