@@ -5,6 +5,7 @@ import android.os.SystemClock;
 import android.support.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.mobileln.bitcoind.Bitcoind;
 import com.mobileln.utils.FileUtils;
@@ -16,6 +17,7 @@ public class Lightningd extends ProcessHelper {
     private static final int START_SERVICE_MAX_RETRY = 10;
     private static final int START_SERVICE_RETRY_INTERVAL_MS = 300;
     private static final Lightningd INSTANCE = new Lightningd();
+    private static final String[] ENABLED_PLUGINS = new String[] {"pay"};
 
     private Lightningd() {
         super(BUFFER_SIZE, true);
@@ -36,15 +38,22 @@ public class Lightningd extends ProcessHelper {
         final String lightningRPCFile = FileUtils.getLightningdRPCPath(context);
         final String bitcoinCliExecutable = FileUtils.getBitcoinCliExecutable(context);
         final String bitcoindDataFolderPath = FileUtils.getBitcoindDataFolderPath(context);
-        setExecutableAndArgs(executable,
-                "--lightning-dir=" + lightningDataDir,
-                "--conf=" + lightningConfigFile,
-                "--rpc-file=" + lightningRPCFile,
-                "--bitcoin-cli=" + bitcoinCliExecutable,
-                "--bitcoin-datadir=" + bitcoindDataFolderPath,
-                "--bitcoin-rpcuser=" + Bitcoind.getInstance().getRpcUserName(),
-                "--bitcoin-rpcpassword=" + Bitcoind.getInstance().getRpcPassowrd(),
-                "--bitcoin-rpcport=" + Bitcoind.RPC_PORT);
+        final String nativeExecutablesFolder = FileUtils.getNativeExecutablesFolder(context);
+
+        ArrayList<String> executableAndArgs = new ArrayList<>();
+        executableAndArgs.add(executable);
+        executableAndArgs.add("--lightning-dir=" + lightningDataDir);
+        executableAndArgs.add("--conf=" + lightningConfigFile);
+        executableAndArgs.add("--rpc-file=" + lightningRPCFile);
+        executableAndArgs.add("--bitcoin-cli=" + bitcoinCliExecutable);
+        executableAndArgs.add("--bitcoin-datadir=" + bitcoindDataFolderPath);
+        executableAndArgs.add("--bitcoin-rpcuser=" + Bitcoind.getInstance().getRpcUserName());
+        executableAndArgs.add("--bitcoin-rpcpassword=" + Bitcoind.getInstance().getRpcPassowrd());
+        executableAndArgs.add("--bitcoin-rpcport=" + Bitcoind.RPC_PORT);
+        for (String plugin : ENABLED_PLUGINS) {
+            executableAndArgs.add("--plugin=" + nativeExecutablesFolder + "/" + plugin);
+        }
+        setExecutableAndArgs(executableAndArgs.toArray(new String[0]));
         startProcess(context, TAG);
         LightningdState.getInstance().startMonitor();
     }

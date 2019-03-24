@@ -11,7 +11,7 @@ import java.util.Map;
 
 import com.mobileln.bitcoind.BitcoindConfig;
 import com.mobileln.lightningd.LightningdConfig;
-import com.mobileln.utils.ExtractResourceUtils;
+//import com.mobileln.utils.ExtractResourceUtils;
 import com.mobileln.utils.FastSyncUtils;
 
 public class DebugActivity extends AppCompatActivity {
@@ -92,11 +92,11 @@ public class DebugActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        try {
-                            ExtractResourceUtils.extractExecutablesIfNecessary(DebugActivity.this, true);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+//                        try {
+//                            ExtractResourceUtils.extractExecutablesIfNecessary(DebugActivity.this, true);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
                     }
                 });
         findViewById(R.id.debug_start_service_btn).setOnClickListener(

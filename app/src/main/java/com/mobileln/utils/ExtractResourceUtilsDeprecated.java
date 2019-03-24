@@ -13,7 +13,7 @@ import java.io.OutputStream;
 
 import com.mobileln.R;
 
-public class ExtractResourceUtils {
+public class ExtractResourceUtilsDeprecated {
 
     private static final String TAG = "ExtractResourceUtils";
     private static final String LAST_EXECUTABLE_VERSION = "last_executable_version";
@@ -74,7 +74,7 @@ public class ExtractResourceUtils {
 
     private static void extractAllExecutables(Context context) throws IOException {
         Log.i(TAG, "Start extracting executables");
-        extractExecutable(context, FileUtils.EXECUTABLES_FOLDER_NAME);
+        // extractExecutable(context, FileUtils.EXECUTABLES_FOLDER_NAME);
         Log.i(TAG, "Finished extracting executables");
     }
 

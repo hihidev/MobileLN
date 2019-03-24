@@ -21,17 +21,10 @@ public class FileUtils {
     private static final String LIGHTNINGD_DATA_FOLDER_NAME = "lightningd_data";
 
     private static final String ASSETS_FOLDER_NAME = "assets";
-    public static final String EXECUTABLES_FOLDER_NAME = "executables";
-    private static final String BITCOIND_EXECUTABLE =
-            ASSETS_FOLDER_NAME + "/" + EXECUTABLES_FOLDER_NAME + "/bitcoind/bitcoind";
-    private static final String BITCOIN_CLI_EXECUTABLE =
-            ASSETS_FOLDER_NAME + "/" + EXECUTABLES_FOLDER_NAME + "/bitcoind/bitcoin-cli";
-    private static final String LIGHTNINGD_EXECUTABLE =
-            ASSETS_FOLDER_NAME + "/" + EXECUTABLES_FOLDER_NAME
-                    + "/lightningd/usr/local/bin/lightningd";
-    private static final String LIGHTNING_CLI_EXECUTABLE =
-            ASSETS_FOLDER_NAME + "/" + EXECUTABLES_FOLDER_NAME
-                    + "/lightningd/usr/local/bin/lightning-cli";
+    private static final String BITCOIND_EXECUTABLE = "bitcoind";
+    private static final String BITCOIN_CLI_EXECUTABLE = "bitcoin-cli";
+    private static final String LIGHTNINGD_EXECUTABLE = "lightningd";
+    private static final String LIGHTNING_CLI_EXECUTABLE = "lightning-cli";
     private static final String LIGHTNING_RPC_FILE = "lightningrpc";
     public static final String TMP_FASTSYNC_FILE = "tmpfastsyncfile";
 
@@ -61,20 +54,28 @@ public class FileUtils {
         return getFolderPath(context.getFilesDir(), LIGHTNINGD_DATA_FOLDER_NAME);
     }
 
+    public static String getNativeExecutablesFolder(Context context) throws IOException {
+        return context.getApplicationInfo().nativeLibraryDir;
+    }
+
     public static String getBitcoindExecutable(Context context) throws IOException {
-        return new File(context.getFilesDir(), BITCOIND_EXECUTABLE).getCanonicalPath();
+        return new File(getNativeExecutablesFolder(context),
+                BITCOIND_EXECUTABLE).getCanonicalPath();
     }
 
     public static String getBitcoinCliExecutable(Context context) throws IOException {
-        return new File(context.getFilesDir(), BITCOIN_CLI_EXECUTABLE).getCanonicalPath();
+        return new File(getNativeExecutablesFolder(context),
+                BITCOIN_CLI_EXECUTABLE).getCanonicalPath();
     }
 
     public static String getLightningdExecutable(Context context) throws IOException {
-        return new File(context.getFilesDir(), LIGHTNINGD_EXECUTABLE).getCanonicalPath();
+        return new File(getNativeExecutablesFolder(context),
+                LIGHTNINGD_EXECUTABLE).getCanonicalPath();
     }
 
     public static String getLightningCliExecutable(Context context) throws IOException {
-        return new File(context.getFilesDir(), LIGHTNING_CLI_EXECUTABLE).getCanonicalPath();
+        return new File(getNativeExecutablesFolder(context),
+                LIGHTNING_CLI_EXECUTABLE).getCanonicalPath();
     }
 
     public static String getAssetsFolderPath(Context context) throws IOException {
