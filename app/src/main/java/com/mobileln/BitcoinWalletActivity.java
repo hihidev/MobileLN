@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -38,32 +41,42 @@ public class BitcoinWalletActivity extends AppCompatActivity {
     private Button mBtcWithdrawalBtn;
     private ImageView mBtcWithdrawalCameraImageView;
     private TextView mBtcBalanceTextView;
+    private Button mGetTestCoinFromFaucetButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bitcoin_wallet);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mQRImageView = findViewById(R.id.receive_payment_bitcoin_imageview);
         mReceiveBtcAddrBtn = findViewById(R.id.receive_my_btc_address_button);
         mBtcWithdrawalAddrEditText = findViewById(R.id.btc_withdrawal_address);
         mBtcWithdrawalBtn = findViewById(R.id.btc_withdrawal_button);
         mBtcWithdrawalAmountEditText = findViewById(R.id.btc_withdrawal_amount);
         mBtcBalanceTextView = findViewById(R.id.btc_wallet_balance_textview);
+        mGetTestCoinFromFaucetButton = findViewById(R.id.receive_test_coin_from_faucet_button);
+        mGetTestCoinFromFaucetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(BitcoinWalletActivity.this,
+                        Uri.parse("https://tbtc.bitaps.com/"));
+                copyBtcAddressToClipBoard("Deposit address copied.\nPlease paste it to the address field.");
+            }
+        });
+        mGetTestCoinFromFaucetButton.setVisibility(
+                NodeService.isTestnet() ? View.VISIBLE : View.GONE);
         mReceiveBtcAddrBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(
-                        Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("addr", mReceiveBtcAddrBtn.getText());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(BitcoinWalletActivity.this, "Copied address", Toast.LENGTH_SHORT).show();
+                copyBtcAddressToClipBoard("Deposit address copied");
             }
         });
         mBtcWithdrawalBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showWithdrawalConfirmationDialog(mBtcWithdrawalAddrEditText.getText().toString(), mBtcWithdrawalAmountEditText.getText().toString());
+                showWithdrawalConfirmationDialog(mBtcWithdrawalAddrEditText.getText().toString(),
+                        mBtcWithdrawalAmountEditText.getText().toString());
             }
         });
         mBtcWithdrawalCameraImageView = findViewById(R.id.btc_withdrawal_camera_btn);
@@ -110,10 +123,12 @@ public class BitcoinWalletActivity extends AppCompatActivity {
                     return null;
                 }
             }
+
             @Override
             public void onPostExecute(String str) {
                 if (str == null) {
-                    Toast.makeText(BitcoinWalletActivity.this, "cannot get address", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BitcoinWalletActivity.this, "cannot get address",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 try {
@@ -147,27 +162,42 @@ public class BitcoinWalletActivity extends AppCompatActivity {
         }.execute();
     }
 
+    private void copyBtcAddressToClipBoard(String message) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(
+                Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("addr", mReceiveBtcAddrBtn.getText());
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(BitcoinWalletActivity.this, message,
+                Toast.LENGTH_LONG).show();
+    }
+
     private void showWithdrawalConfirmationDialog(final String address, final String amount) {
         final boolean withdrawAll = "all".equals(amount);
-        final long longAmount =  withdrawAll ? 0 : Long.valueOf(amount);
+        final long longAmount = withdrawAll ? 0 : Long.valueOf(amount);
         new AlertDialog.Builder(this)
                 .setTitle("BTC withdrawal")
-                .setMessage("Withdrawal address:\t" + address + "\n" + "Amount:\t" + (withdrawAll ? "all" : BtcSatUtils.sat2String(longAmount)) + "\n" + "Do you CONFIRM the withdrawal?\n(CANNOT BE UNDONE)")
+                .setMessage("Withdrawal address:\t" + address + "\n" + "Amount:\t" + (withdrawAll
+                        ? "all" : BtcSatUtils.sat2String(longAmount)) + "\n"
+                        + "Do you CONFIRM the withdrawal?\n(CANNOT BE UNDONE)")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        Toast.makeText(BitcoinWalletActivity.this, "Yaay", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BitcoinWalletActivity.this, "Yaay",
+                                Toast.LENGTH_SHORT).show();
                         new Thread() {
                             public void run() {
                                 try {
-                                    showWithdrawalSuccessResult(LightningCli.newInstance().withdrawBtc(address, longAmount, withdrawAll));
+                                    showWithdrawalSuccessResult(
+                                            LightningCli.newInstance().withdrawBtc(address,
+                                                    longAmount, withdrawAll));
                                 } catch (IOException | JSONException e) {
                                     showWithdrawalFailedResult(e.getMessage());
                                 }
                             }
                         }.start();
-                    }})
+                    }
+                })
                 .setNegativeButton(android.R.string.no, null).show();
     }
 
@@ -178,7 +208,9 @@ public class BitcoinWalletActivity extends AppCompatActivity {
             public void run() {
                 new AlertDialog.Builder(BitcoinWalletActivity.this)
                         .setTitle("Withdrawal success")
-                        .setMessage("txid:\t" + txid + "It may take 60+ minutes (6 confirmations) to show in your withdrawal wallet")
+                        .setMessage("txid:\t" + txid
+                                + "It may take 60+ minutes (6 confirmations) to show in your "
+                                + "withdrawal wallet")
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setNeutralButton(android.R.string.ok, null)
                         .show();

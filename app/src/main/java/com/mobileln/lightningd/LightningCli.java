@@ -257,9 +257,9 @@ public class LightningCli extends ProcessHelper {
                 new String[]{"pay", invoice, "null", label});
         long amount = json.getLong("msatoshi") / 1000;
         long dateTime = json.getLong("created_at");
-        String destination = json.getString("destination");
+        String description = label;
         String paymentHash = json.getString("payment_hash");
-        return new PaymentInfo(destination, invoice, paymentHash, amount, false, dateTime);
+        return new PaymentInfo(description, invoice, paymentHash, amount, false, dateTime);
     }
 
     @WorkerThread

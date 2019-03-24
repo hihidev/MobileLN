@@ -5,7 +5,7 @@
     android:id="@+id/swipe_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+>
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -14,6 +14,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:layout_marginBottom="25dp" android:layout_marginEnd="25dp"
+                      android:layout_marginStart="25dp"
+                      android:layout_marginTop="25dp"
+                      android:text="Invoice"
+                      android:textSize="24sp"
+                      android:textStyle="bold"/>
             <LinearLayout
                 android:id="@+id/receive_payment_qr_linear_layout"
                 android:layout_width="match_parent"
@@ -24,51 +31,56 @@
                 <ImageView android:id="@+id/receive_payment_qr_imageview"
                            android:layout_width="match_parent"
                            android:layout_height="wrap_content"
-                           android:layout_marginTop="20dp"
-                           android:layout_marginBottom="20dp"
                            android:layout_gravity="center"
+                           android:layout_marginBottom="20dp"
                            android:adjustViewBounds="true"
                            android:scaleType="center"
-                           />
+                />
                 <android.support.design.widget.TextInputLayout
-                    android:layout_marginStart="45dp"
-                    android:layout_marginEnd="45dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="45dp"
+                    android:layout_marginStart="45dp">
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/receive_payment_amount_textview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/receive_payment_amount_textview"
                         android:enabled="false"
                         android:hint="@string/pay_amount"/>
 
                 </android.support.design.widget.TextInputLayout>
                 <android.support.design.widget.TextInputLayout
-                    android:layout_marginStart="45dp"
-                    android:layout_marginEnd="45dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="45dp"
+                    android:layout_marginStart="45dp">
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/receive_payment_description_textview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/receive_payment_description_textview"
                         android:enabled="false"
                         android:hint="@string/pay_description"/>
 
                 </android.support.design.widget.TextInputLayout>
-                <Button android:id="@+id/receive_my_address_button"
-                        android:layout_marginStart="45dp"
-                        android:layout_marginEnd="45dp"
-                        style="@android:style/Widget.Holo.Button.Small"
-                        android:layout_width="wrap_content"
+                <TextView android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:layout_marginEnd="50dp"
+                          android:layout_marginStart="50dp" android:text="Invoice"
+                          android:textSize="12sp"/>
+                <Button android:id="@+id/receive_my_invoice_button"
+                        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginBottom="30dp" android:gravity="center"
-                        android:maxLines="1"
+                        android:layout_marginBottom="30dp"
+                        android:layout_marginEnd="45dp" android:layout_marginStart="45dp"
+                        android:gravity="center"
+                        android:maxLines="10"
                         android:minWidth="200dp"
-                />
+                        android:text="my_invoice"
+                        android:textSize="10sp"/>
             </LinearLayout>
             <android.support.design.button.MaterialButton
                 android:id="@+id/generate_new_invoice_btn"
@@ -76,27 +88,33 @@
                 android:layout_width="300dp"
                 android:layout_height="300dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="45dp"
-                android:layout_marginStart="45dp"
                 android:layout_marginEnd="45dp"
+                android:layout_marginStart="45dp"
+                android:text="Generate a new invoice"
                 android:textSize="18sp"
                 app:backgroundTint="@color/colorAccent"
-                app:cornerRadius="32dp"
-                android:text="Generate a new invoice"/>
+                app:cornerRadius="32dp"/>
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                      android:textSize="24sp" android:textStyle="bold"
+                      android:layout_marginEnd="25dp" android:layout_marginStart="25dp"
                       android:layout_marginTop="25dp"
-                      android:layout_marginStart="25dp"
-                      android:layout_marginEnd="25dp"
-                    android:text="Inbound payments"/>
+                      android:text="Inbound payments"
+                      android:textSize="24sp"
+                      android:textStyle="bold"/>
 
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:layout_marginEnd="25dp"
+                      android:layout_marginStart="25dp"
+                      android:layout_marginTop="25dp"
+                      android:id="@+id/receive_no_inbound_payment_textview"
+                      android:text="No inbound payments yet.\nStart by generating a new invoice now!"
+                      android:textSize="18sp"/>
             <LinearLayout android:id="@+id/payment_received_list"
                           android:layout_width="match_parent"
                           android:layout_height="wrap_content"
-                          android:background="@android:color/white"
-                          android:layout_marginTop="25dp"
                           android:layout_marginLeft="25dp"
                           android:layout_marginRight="25dp"
+                          android:layout_marginTop="25dp"
+                          android:background="@android:color/white"
                           android:gravity="top"
                           android:orientation="vertical">
                 <include layout="@layout/ln_receive_payment_layout_item" android:visibility="gone"/>

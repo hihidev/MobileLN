@@ -181,7 +181,7 @@ public class WalletFragment extends Fragment {
         if (activity == null) {
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog_Alert);
         builder.setTitle(R.string.dialog_question_ln_service_title).setMessage(
                 R.string.dialog_question_setup_config).setPositiveButton(
                 "Yes(Fast sync)", new DialogInterface.OnClickListener() {

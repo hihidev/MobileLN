@@ -46,6 +46,7 @@ public class SendFragment extends Fragment {
     private Button mPayNowBtn;
     private Button mClearBtn;
     private TextView mDescriptionTextView;
+    private TextView mNoOutboundPaymentTextView;
     private LinearLayout mPaymentSentListLayout;
 
     private long mPayAmount;
@@ -61,6 +62,7 @@ public class SendFragment extends Fragment {
         mInvoiceTextView = view.findViewById(R.id.payment_invoice_textview);
         mPayNowBtn = view.findViewById(R.id.payment_pay_now_button);
         mClearBtn = view.findViewById(R.id.payment_clear_button);
+        mNoOutboundPaymentTextView = view.findViewById(R.id.payment_no_outbound_payment_textview);
         mPaymentSentListLayout = view.findViewById(R.id.payment_sent_list);
         mPayNowBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,7 +115,7 @@ public class SendFragment extends Fragment {
             }
         });
         updatePaymentSentAsync();
-        mPayingDialog = new AlertDialog.Builder(getContext())
+        mPayingDialog = new AlertDialog.Builder(getActivity(), R.style.Theme_MaterialComponents_Light_Dialog_Alert)
                 .setTitle("Payment")
                 .setMessage("Sending payment, please wait...")
                 .setNegativeButton(android.R.string.no, null).create();
@@ -168,11 +170,10 @@ public class SendFragment extends Fragment {
     }
 
     private void showConfirmPaymentDialog(final String invoice, final String label, long amount) {
-        new AlertDialog.Builder(getContext())
-                .setTitle("Payment")
-                .setMessage("Description:\t" + label + "\n" + "Amount:\t" + BtcSatUtils.sat2String(
-                        amount) + "\n" + "Do you CONFIRM to pay this invoice?")
-                .setIcon(android.R.drawable.ic_dialog_alert)
+        new AlertDialog.Builder(getActivity(), R.style.Theme_MaterialComponents_Light_Dialog_Alert)
+                .setTitle("Confirm Payment?")
+                .setMessage("\nAmount:        \t" + BtcSatUtils.sat2String(amount)
+                        + "\n\nDescription:   \t" + label)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -223,6 +224,11 @@ public class SendFragment extends Fragment {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
                 sdf.setTimeZone(tz);
 
+                if (paymentCount > 0) {
+                    mNoOutboundPaymentTextView.setVisibility(View.GONE);
+                } else {
+                    mNoOutboundPaymentTextView.setVisibility(View.VISIBLE);
+                }
                 // TODO: Convert it into listview, no hardcode
                 for (int i = 0; i < childCount; i++) {
                     View view = mPaymentSentListLayout.getChildAt(i);
@@ -254,7 +260,7 @@ public class SendFragment extends Fragment {
     }
 
     private void showPaymentSuccessResult(final PaymentInfo paymentInfo) {
-        Activity activity = getActivity();
+        final Activity activity = getActivity();
         if (activity == null) {
             return;
         }
@@ -262,11 +268,11 @@ public class SendFragment extends Fragment {
             @Override
             public void run() {
                 mPayingDialog.dismiss();
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Payment success")
-                        .setMessage("Paid:\t" + BtcSatUtils.sat2String(paymentInfo.satAmount))
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setNeutralButton(android.R.string.ok, null)
+                new AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog_Alert)
+                        .setTitle("Payment sent")
+                        .setMessage("\nSent:          \t" + BtcSatUtils.sat2String(paymentInfo.satAmount) + "\n\nDescription:   \t"
+                                + paymentInfo.description).setPositiveButton(
+                        android.R.string.ok, null)
                         .show();
                 clearPaymentDetails();
             }
@@ -281,7 +287,7 @@ public class SendFragment extends Fragment {
     }
 
     private void showPaymentFailedResult(final String errorMsg) {
-        Activity activity = getActivity();
+        final Activity activity = getActivity();
         if (activity == null) {
             return;
         }
@@ -289,10 +295,9 @@ public class SendFragment extends Fragment {
             @Override
             public void run() {
                 mPayingDialog.dismiss();
-                new AlertDialog.Builder(getContext())
+                new AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog_Alert)
                         .setTitle("Payment failed")
                         .setMessage("Error: " + errorMsg)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .setNeutralButton(android.R.string.ok, null)
                         .show();
             }

@@ -1,6 +1,7 @@
 package com.mobileln;
 
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.MainThread;
@@ -32,16 +33,20 @@ import com.mobileln.lightningd.LightningCli;
 public class ChannelSetupActivity extends AppCompatActivity {
 
     private static final String TAG = "ChannelSetupActivity";
+    private static final String TEST_NODE_ADDR = "0260d9119979caedc570ada883ff614c6efb93f7f7382e25d73ecbeba0b62df2d7@lnd.fun:9735";
+    private static final String TEST_NODE_DEFAULT_DEPOSIT = "10000";
+
     private ListView mListView;
     private TextView mCreateChannelPeerAddrTextView;
     private TextView mCreateChannelAmountTextView;
     private Button mCreateChannelBtn;
+    private TextView mNoConnectedChannels;
+    private Button mTryTestChannelBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channel_setup);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setupListView();
         mCreateChannelPeerAddrTextView = findViewById(R.id.create_channel_peer_address);
         mCreateChannelAmountTextView = findViewById(R.id.create_channel_amount_sat);
@@ -49,7 +54,21 @@ public class ChannelSetupActivity extends AppCompatActivity {
         mCreateChannelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createChannelAsync(mCreateChannelPeerAddrTextView.getText().toString(), Long.valueOf(mCreateChannelAmountTextView.getText().toString()));
+                createChannelAsync(mCreateChannelPeerAddrTextView.getText().toString(),
+                        Long.valueOf(mCreateChannelAmountTextView.getText().toString()));
+            }
+        });
+        mNoConnectedChannels = findViewById(R.id.create_channel_no_connected_channel);
+        mTryTestChannelBtn = findViewById(R.id.connect_to_test_channel);
+        mTryTestChannelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCreateChannelPeerAddrTextView.setText(TEST_NODE_ADDR);
+                mCreateChannelAmountTextView.setText(TEST_NODE_DEFAULT_DEPOSIT);
+                Toast.makeText(ChannelSetupActivity.this,
+                        "Filled in test channel details.\nClick \"Create Channel\" to the next "
+                                + "step!",
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -113,7 +132,9 @@ public class ChannelSetupActivity extends AppCompatActivity {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             viewHolder.channelName.setText("[" + channelInfo.state + "]" + channelInfo.name);
-            viewHolder.channelColor.setCardBackgroundColor(channelInfo.state.equals(ChannelInfo.State.CHANNELD_NORMAL) ? 0xFF00FF00 : 0xFFFFFF00);
+            viewHolder.channelColor.setCardBackgroundColor(
+                    channelInfo.state.equals(ChannelInfo.State.CHANNELD_NORMAL) ? 0xFF00FF00
+                            : 0xFFFFFF00);
             viewHolder.myBal.setText("My bal:" + channelInfo.myBal);
             viewHolder.oppBal.setText("Opp bal:" + channelInfo.oppBal);
             viewHolder.channelId = channelInfo.channelId;
@@ -123,7 +144,8 @@ public class ChannelSetupActivity extends AppCompatActivity {
 
     @MainThread
     private void showCloseChannelDialog(final String channelId) {
-        final CharSequence[] charSequence = new CharSequence[] {"Close channel", "FORCE Close channel (Funds may locked)"};
+        final CharSequence[] charSequence =
+                new CharSequence[]{"Close channel", "FORCE Close channel (Funds may locked)"};
         final List<Integer> clickedOption = new ArrayList<>();
         clickedOption.add(0);
         new AlertDialog.Builder(this)
@@ -187,7 +209,8 @@ public class ChannelSetupActivity extends AppCompatActivity {
 
     @MainThread
     private void updateListView(ChannelInfo[] channelInfos) {
-        mListView.setAdapter(new MyAdapter(new ArrayList<ChannelInfo>(Arrays.asList(channelInfos)), this));
+        mListView.setAdapter(
+                new MyAdapter(new ArrayList<ChannelInfo>(Arrays.asList(channelInfos)), this));
     }
 
     @MainThread
@@ -246,6 +269,14 @@ public class ChannelSetupActivity extends AppCompatActivity {
                     Toast.makeText(ChannelSetupActivity.this, "Something wrong",
                             Toast.LENGTH_SHORT).show();
                     return;
+                }
+                if (channelInfos.length == 0) {
+                    mNoConnectedChannels.setVisibility(View.VISIBLE);
+                    mTryTestChannelBtn.setVisibility(
+                            NodeService.isTestnet() ? View.VISIBLE : View.GONE);
+                } else {
+                    mNoConnectedChannels.setVisibility(View.GONE);
+                    mTryTestChannelBtn.setVisibility(View.GONE);
                 }
                 updateListView(channelInfos);
             }

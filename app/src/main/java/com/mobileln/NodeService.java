@@ -41,6 +41,7 @@ public class NodeService extends Service {
 
     private static volatile int sCurrentState = NodeState.ALL_DISCONNECTED;
     private static volatile boolean sRunning = false;
+    private static volatile boolean sTestnet = true;
 
     private static ArrayList<Runnable> sCurrentStateUpdatedCallback = new ArrayList<>();
     private static final Object mCurrentStateUpdateLock = new Object();
@@ -234,6 +235,10 @@ public class NodeService extends Service {
         synchronized (mCurrentStateUpdateLock) {
             sCurrentStateUpdatedCallback.remove(runnable);
         }
+    }
+
+    public static boolean isTestnet() {
+        return sTestnet;
     }
 
     public static boolean isRunning() {

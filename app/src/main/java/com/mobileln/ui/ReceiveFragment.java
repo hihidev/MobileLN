@@ -47,14 +47,16 @@ public class ReceiveFragment extends Fragment {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ImageView mQRImageView;
-    private Button mMyAddressBtn;
+    private Button mMyInvoiceBtn;
     private LinearLayout mPaymentReceivedListLayout;
     private LinearLayout mQRLinearLayout;
     private EditText mAmountEditText;
     private EditText mDescriptionEditText;
     private Button mGenerateInvoiceBtn;
+    private TextView mNoInboundPaymentsTextview;
     private String mLabelPendingPayment = null;
     private boolean mPaymentListenerRunning = false;
+    private PaymentInfo[] mInboundPaymentList = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,11 +70,12 @@ public class ReceiveFragment extends Fragment {
             }
         });
         mQRImageView = view.findViewById(R.id.receive_payment_qr_imageview);
-        mMyAddressBtn = view.findViewById(R.id.receive_my_address_button);
+        mMyInvoiceBtn = view.findViewById(R.id.receive_my_invoice_button);
         mPaymentReceivedListLayout = view.findViewById(R.id.payment_received_list);
         mQRLinearLayout = view.findViewById(R.id.receive_payment_qr_linear_layout);
         mAmountEditText = view.findViewById(R.id.receive_payment_amount_textview);
         mDescriptionEditText = view.findViewById(R.id.receive_payment_description_textview);
+        mNoInboundPaymentsTextview = view.findViewById(R.id.receive_no_inbound_payment_textview);
         mGenerateInvoiceBtn = view.findViewById(R.id.generate_new_invoice_btn);
         mGenerateInvoiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,12 +83,12 @@ public class ReceiveFragment extends Fragment {
                 showGenerateInvoiceDialog();
             }
         });
-        mMyAddressBtn.setOnClickListener(new View.OnClickListener() {
+        mMyInvoiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(
                         Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("addr", mMyAddressBtn.getText());
+                ClipData clip = ClipData.newPlainText("addr", mMyInvoiceBtn.getText());
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(getContext(), "Copied address", Toast.LENGTH_SHORT).show();
             }
@@ -105,6 +108,7 @@ public class ReceiveFragment extends Fragment {
         if (mLabelPendingPayment != null) {
             registerPaymentReceivedListener(mLabelPendingPayment);
         }
+        updatePaymentList(mInboundPaymentList);
     }
 
     @Override
@@ -119,7 +123,9 @@ public class ReceiveFragment extends Fragment {
         final EditText amountEditText = dialogView.findViewById(R.id.payment_amount_textivew);
         final EditText descriptionEditText = dialogView.findViewById(
                 R.id.payment_description_textivew);
-        new AlertDialog.Builder(getContext()).setTitle("Invoice").setView(
+        new AlertDialog.Builder(getActivity(),
+                R.style.Theme_MaterialComponents_Light_Dialog_Alert).setTitle(
+                "New Invoice").setView(
                 dialogView).setPositiveButton(
 
                 android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -161,7 +167,7 @@ public class ReceiveFragment extends Fragment {
         try {
             Bitmap qrCode = QRUtils.encodeAsBitmap(bolt11, getResources());
             mQRImageView.setImageBitmap(qrCode);
-            mMyAddressBtn.setText("lightning:" + bolt11);
+            mMyInvoiceBtn.setText(bolt11);
             mQRLinearLayout.setVisibility(View.VISIBLE);
             mGenerateInvoiceBtn.setVisibility(View.GONE);
             mAmountEditText.setText(String.valueOf(amount));
@@ -201,56 +207,69 @@ public class ReceiveFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                int paymentCount = paymentInfos.length;
-                int childCount = mPaymentReceivedListLayout.getChildCount();
-
-                // TOOD: Better timezone handling
-                Calendar cal = Calendar.getInstance();
-                TimeZone tz = cal.getTimeZone();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
-                sdf.setTimeZone(tz);
-
-                // TODO: Convert it into listview, no hardcode
-                for (int i = 0; i < childCount; i++) {
-                    View view = mPaymentReceivedListLayout.getChildAt(i);
-                    if (i < paymentCount) {
-                        view.setVisibility(View.VISIBLE);
-                        ImageView receiveStatusImage = view.findViewById(
-                                R.id.receive_status_imageview);
-                        TextView descriptionTextView = view.findViewById(
-                                R.id.receive_description_textview);
-                        TextView amountTextView = view.findViewById(R.id.receive_amount_textview);
-                        TextView dateTextView = view.findViewById(
-                                R.id.receive_date_textview);
-                        final PaymentInfo paymentInfo = paymentInfos[paymentCount - i - 1];
-                        String description = paymentInfo.description;
-                        if (TextUtils.isEmpty(description)) {
-                            description = paymentInfo.paymentHash;
-                        }
-                        view.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (!paymentInfo.completed) {
-                                    updateQRImage(paymentInfo.bolt11, paymentInfo.satAmount,
-                                            paymentInfo.description);
-                                    registerPaymentReceivedListener(paymentInfo.description);
-                                }
-                            }
-                        });
-                        receiveStatusImage.setImageResource(
-                                paymentInfo.completed ? R.drawable.tick : R.drawable.clock);
-                        descriptionTextView.setText(description);
-                        amountTextView.setText(BtcSatUtils.sat2String(paymentInfo.satAmount));
-                        dateTextView.setText(paymentInfo.dateTime > 0 ?
-                                "Received: " + sdf.format(new Date(paymentInfo.dateTime * 1000))
-                                : (paymentInfo.completed ? "completed?????"
-                                        : "Pending payment..."));
-                    } else {
-                        view.setVisibility(View.GONE);
-                    }
-                }
+                mInboundPaymentList = paymentInfos;
             }
         }.execute();
+    }
+
+    private void updatePaymentList(PaymentInfo[] inboundPaymentList) {
+        if (inboundPaymentList == null) {
+            return;
+        }
+        int paymentCount = inboundPaymentList.length;
+        int childCount = mPaymentReceivedListLayout.getChildCount();
+
+        // TOOD: Better timezone handling
+        Calendar cal = Calendar.getInstance();
+        TimeZone tz = cal.getTimeZone();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
+        sdf.setTimeZone(tz);
+
+        if (paymentCount > 0) {
+            mNoInboundPaymentsTextview.setVisibility(View.GONE);
+        } else {
+            mNoInboundPaymentsTextview.setVisibility(View.VISIBLE);
+        }
+
+        // TODO: Convert it into listview, no hardcode
+        for (int i = 0; i < childCount; i++) {
+            View view = mPaymentReceivedListLayout.getChildAt(i);
+            if (i < paymentCount) {
+                view.setVisibility(View.VISIBLE);
+                ImageView receiveStatusImage = view.findViewById(
+                        R.id.receive_status_imageview);
+                TextView descriptionTextView = view.findViewById(
+                        R.id.receive_description_textview);
+                TextView amountTextView = view.findViewById(R.id.receive_amount_textview);
+                TextView dateTextView = view.findViewById(
+                        R.id.receive_date_textview);
+                final PaymentInfo paymentInfo = inboundPaymentList[paymentCount - i - 1];
+                String description = paymentInfo.description;
+                if (TextUtils.isEmpty(description)) {
+                    description = paymentInfo.paymentHash;
+                }
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (!paymentInfo.completed) {
+                            updateQRImage(paymentInfo.bolt11, paymentInfo.satAmount,
+                                    paymentInfo.description);
+                            registerPaymentReceivedListener(paymentInfo.description);
+                        }
+                    }
+                });
+                receiveStatusImage.setImageResource(
+                        paymentInfo.completed ? R.drawable.tick : R.drawable.clock);
+                descriptionTextView.setText(description);
+                amountTextView.setText(BtcSatUtils.sat2String(paymentInfo.satAmount));
+                dateTextView.setText(paymentInfo.dateTime > 0 ?
+                        "Received: " + sdf.format(new Date(paymentInfo.dateTime * 1000))
+                        : (paymentInfo.completed ? "completed?????"
+                                : "Pending payment..."));
+            } else {
+                view.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void registerPaymentReceivedListener(final String label) {
@@ -267,18 +286,18 @@ public class ReceiveFragment extends Fragment {
                                 label);
                         if (paymentInfo.completed) {
                             unregisterPaymentReceivedListener();
-                            Activity activity = getActivity();
+                            final Activity activity = getActivity();
                             if (activity == null) {
                                 return;
                             }
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    new AlertDialog.Builder(getContext()).setTitle(
-                                            "Payment").setMessage(
-                                            "Payment received!\nLabel:\t" + paymentInfo.description
-                                                    + "\nAmount:\t" + BtcSatUtils.sat2String(
-                                                    paymentInfo.satAmount)).setNeutralButton(
+                                    new AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog_Alert).setTitle(
+                                            "Payment received").setMessage(
+                                            "\nReceived:      \t" + BtcSatUtils.sat2String(
+                                                    paymentInfo.satAmount) + "\n\nDescription:   \t"
+                                                    + paymentInfo.description).setPositiveButton(
                                             android.R.string.ok, null).show();
                                     clearPendingPayment();
                                 }

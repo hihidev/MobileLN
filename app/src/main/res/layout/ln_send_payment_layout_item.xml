@@ -11,8 +11,6 @@
                android:scaleType="fitStart"
                android:src="@drawable/clock"
     />
-
-
     <TextView android:id="@+id/receive_description_textview" android:layout_width="240dp"
               android:layout_height="30dp"
               android:layout_alignParentTop="true"

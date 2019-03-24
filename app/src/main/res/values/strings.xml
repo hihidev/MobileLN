@@ -25,7 +25,7 @@
     <string name="pay_amount">Amount</string>
     <string name="pay_description">Description</string>
     <string name="withdraw_btc_address">Withdraw BTC address</string>
-    <string name="btc_wallet_balance">Btc wallet balance</string>
+    <string name="btc_wallet_balance">Bitcoin wallet balance</string>
     <string name="withdraw_btc_amount">Amount (sat)</string>
     <string name="my_node_address">My node address</string>
     <string name="create_channel_peer_address">Peer address</string>

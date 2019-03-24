@@ -23,7 +23,6 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -45,10 +44,10 @@
         <activity android:name=".CustomConfigActivity"/>
         <activity android:name=".DebugConsoleActivity" android:theme="@style/Theme.AppCompat"/>
         <activity android:name=".BitcoinWalletActivity" android:label="Bitcoin Wallet"
-                  android:theme="@style/BitcoinWalletTheme"/>
+                  android:parentActivityName=".MainActivity"/>
         <activity android:name=".ChannelSetupActivity" android:label="Channel"
-                  android:theme="@style/BitcoinWalletTheme"
-                  android:windowSoftInputMode="adjustPan"/>
+                  android:windowSoftInputMode="adjustPan"
+                  android:parentActivityName=".MainActivity"/>
         <service android:name=".NodeService"/>
 
     </application>

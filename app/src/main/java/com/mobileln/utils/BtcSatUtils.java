@@ -5,11 +5,11 @@ import android.util.Pair;
 public class BtcSatUtils {
     public static String sat2String(long sat) {
         if (sat < 100000) {
-            return sat + " sat";
+            return sat + " SAT";
         } else if (sat < 1000000) {
-            return sat/1000 + "k sat";
+            return sat/1000 + "k SAT";
         } else {
-            return String.format("\u20BF%.4f", (sat / (double)100000000));
+            return String.format("%.4f BTC", (sat / (double)100000000));
         }
     }
 
