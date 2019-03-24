@@ -1,31 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="60dp"
                 android:background="@android:color/white">
-    <TextView android:id="@+id/receive_amount_textview" android:layout_width="120dp"
-              android:layout_height="60dp"
-              android:layout_alignParentRight="true"
-              android:layout_centerVertical="true"
-              android:gravity="center"
-              android:text="+XXXXX"
-              android:textSize="22sp"/>
+    <ImageView android:id="@+id/receive_status_imageview"
+               android:layout_width="25dp"
+               android:layout_height="25dp"
+               android:layout_alignParentStart="true"
+               android:layout_centerVertical="true" android:layout_margin="15dp"
+               android:scaleType="fitStart"
+               android:src="@drawable/clock"
+    />
 
-    <TextView android:id="@+id/from_textview" android:layout_width="240dp"
-              android:layout_height="25dp"
+
+    <TextView android:id="@+id/receive_description_textview" android:layout_width="240dp"
+              android:layout_height="30dp"
               android:layout_alignParentTop="true"
               android:layout_toEndOf="@id/receive_status_imageview"
-              android:gravity="center_vertical"
-              android:text="From ABC Company"
-              android:layout_margin="5dp"
-              android:textSize="17sp"/>
-    <TextView android:id="@+id/receive_reference_textview" android:layout_width="240dp"
-              android:layout_height="25dp"
+              android:gravity="bottom"
+              android:lines="1"
+              android:text="To ABC Company"
+              android:textSize="17sp"
+              android:textStyle="bold"/>
+    <TextView android:id="@+id/receive_date_textview" android:layout_width="match_parent"
+              android:layout_height="30dp"
               android:layout_alignParentBottom="true"
-              android:layout_below="@id/from_textview"
-              android:layout_margin="5dp"
-              android:gravity="center_vertical"
-              android:text="abcdef01234567890abcdef0123465678" android:textSize="12sp"/>
+              android:layout_below="@id/receive_description_textview"
+              android:layout_toEndOf="@id/receive_status_imageview"
+              android:gravity="top"
+              android:text="Paid: 24/03/2019 03:26:57" android:textSize="16sp"/>
+
+    <TextView android:id="@+id/receive_amount_textview" android:layout_width="120dp"
+              android:layout_height="match_parent"
+              android:layout_alignParentBottom="true"
+              android:layout_alignParentRight="true"
+              android:layout_alignParentTop="true"
+              android:layout_marginEnd="15dp"
+              android:gravity="right|center_vertical"
+              android:text="+XXXXX"
+              android:textSize="16sp"
+              android:textStyle="bold"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

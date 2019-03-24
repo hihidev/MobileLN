@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,7 +66,8 @@ public class SendFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (mValidInvoice) {
-                    showConfirmPaymentDialog(mInvoiceTextView.getText().toString(), mPayDescription, mPayAmount);
+                    showConfirmPaymentDialog(mInvoiceTextView.getText().toString(), mPayDescription,
+                            mPayAmount);
                 }
             }
         });
@@ -143,6 +145,7 @@ public class SendFragment extends Fragment {
                     return null;
                 }
             }
+
             @Override
             public void onPostExecute(PaymentInfo paymentInfo) {
                 if (paymentInfo == null) {
@@ -167,14 +170,15 @@ public class SendFragment extends Fragment {
     private void showConfirmPaymentDialog(final String invoice, final String label, long amount) {
         new AlertDialog.Builder(getContext())
                 .setTitle("Payment")
-                .setMessage("Description:\t" + label + "\n" + "Amount:\t" + BtcSatUtils.sat2String(amount) + "\n" + "Do you CONFIRM to pay this invoice?")
+                .setMessage("Description:\t" + label + "\n" + "Amount:\t" + BtcSatUtils.sat2String(
+                        amount) + "\n" + "Do you CONFIRM to pay this invoice?")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         // Toast.makeText(getContext(), "Yaay", Toast.LENGTH_SHORT).show();
                         mInvoiceTextView.setText("");
-                        mPayingDialog.show();;
+                        mPayingDialog.show();
                         new Thread() {
                             public void run() {
                                 try {
@@ -186,7 +190,8 @@ public class SendFragment extends Fragment {
                                 updatePaymentSentAsync();
                             }
                         }.start();
-                    }})
+                    }
+                })
                 .setNegativeButton(android.R.string.no, null).show();
     }
 
@@ -201,10 +206,12 @@ public class SendFragment extends Fragment {
                     return null;
                 }
             }
+
             @Override
             public void onPostExecute(PaymentInfo[] paymentInfos) {
                 if (paymentInfos == null) {
-                     Toast.makeText(getContext(), "cannot update payment", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "cannot update payment",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 int paymentCount = paymentInfos.length;
@@ -213,7 +220,7 @@ public class SendFragment extends Fragment {
                 // TOOD: Better timezone handling
                 Calendar cal = Calendar.getInstance();
                 TimeZone tz = cal.getTimeZone();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
                 sdf.setTimeZone(tz);
 
                 // TODO: Convert it into listview, no hardcode
@@ -221,17 +228,23 @@ public class SendFragment extends Fragment {
                     View view = mPaymentSentListLayout.getChildAt(i);
                     if (i < paymentCount) {
                         view.setVisibility(View.VISIBLE);
-                        TextView fromTextView = view.findViewById(R.id.from_textview);
+                        TextView fromTextView = view.findViewById(
+                                R.id.receive_description_textview);
                         TextView amountTextView = view.findViewById(R.id.receive_amount_textview);
-                        TextView referenceTextView = view.findViewById(R.id.receive_reference_textview);
+                        TextView referenceTextView = view.findViewById(R.id.receive_date_textview);
+                        ImageView aymentStatusImage = view.findViewById(
+                                R.id.receive_status_imageview);
                         PaymentInfo paymentInfo = paymentInfos[paymentCount - i - 1];
                         String description = paymentInfo.description;
                         if (TextUtils.isEmpty(description)) {
                             description = paymentInfo.paymentHash;
                         }
+                        aymentStatusImage.setImageResource(
+                                paymentInfo.completed ? R.drawable.tick : R.drawable.clock);
                         fromTextView.setText(description);
                         amountTextView.setText(BtcSatUtils.sat2String(paymentInfo.satAmount));
-                        referenceTextView.setText(sdf.format(new Date(paymentInfo.dateTime * 1000)));
+                        referenceTextView.setText(paymentInfo.completed ? "Paid: " + sdf.format(
+                                new Date(paymentInfo.dateTime * 1000)) : "Paying invoice...");
                     } else {
                         view.setVisibility(View.GONE);
                     }

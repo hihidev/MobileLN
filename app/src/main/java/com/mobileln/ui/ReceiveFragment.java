@@ -207,7 +207,7 @@ public class ReceiveFragment extends Fragment {
                 // TOOD: Better timezone handling
                 Calendar cal = Calendar.getInstance();
                 TimeZone tz = cal.getTimeZone();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
                 sdf.setTimeZone(tz);
 
                 // TODO: Convert it into listview, no hardcode
@@ -217,10 +217,11 @@ public class ReceiveFragment extends Fragment {
                         view.setVisibility(View.VISIBLE);
                         ImageView receiveStatusImage = view.findViewById(
                                 R.id.receive_status_imageview);
-                        TextView fromTextView = view.findViewById(R.id.from_textview);
+                        TextView descriptionTextView = view.findViewById(
+                                R.id.receive_description_textview);
                         TextView amountTextView = view.findViewById(R.id.receive_amount_textview);
-                        TextView referenceTextView = view.findViewById(
-                                R.id.receive_reference_textview);
+                        TextView dateTextView = view.findViewById(
+                                R.id.receive_date_textview);
                         final PaymentInfo paymentInfo = paymentInfos[paymentCount - i - 1];
                         String description = paymentInfo.description;
                         if (TextUtils.isEmpty(description)) {
@@ -238,10 +239,12 @@ public class ReceiveFragment extends Fragment {
                         });
                         receiveStatusImage.setImageResource(
                                 paymentInfo.completed ? R.drawable.tick : R.drawable.clock);
-                        fromTextView.setText(description);
+                        descriptionTextView.setText(description);
                         amountTextView.setText(BtcSatUtils.sat2String(paymentInfo.satAmount));
-                        referenceTextView.setText(paymentInfo.dateTime > 0 ?
-                                sdf.format(new Date(paymentInfo.dateTime * 1000)) : "");
+                        dateTextView.setText(paymentInfo.dateTime > 0 ?
+                                "Received: " + sdf.format(new Date(paymentInfo.dateTime * 1000))
+                                : (paymentInfo.completed ? "completed?????"
+                                        : "Pending payment..."));
                     } else {
                         view.setVisibility(View.GONE);
                     }
@@ -258,9 +261,10 @@ public class ReceiveFragment extends Fragment {
         mPaymentListenerRunning = true;
         new Thread() {
             public void run() {
-                while(mPaymentListenerRunning) {
+                while (mPaymentListenerRunning) {
                     try {
-                        final PaymentInfo paymentInfo =  LightningCli.newInstance().getInvoiceInfo(label);
+                        final PaymentInfo paymentInfo = LightningCli.newInstance().getInvoiceInfo(
+                                label);
                         if (paymentInfo.completed) {
                             unregisterPaymentReceivedListener();
                             Activity activity = getActivity();
@@ -280,7 +284,7 @@ public class ReceiveFragment extends Fragment {
                                 }
                             });
                         }
-                    } catch (IOException|JSONException e) {
+                    } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     }
                     SystemClock.sleep(PAYMENT_LISTENER_INTERVAL_MS);

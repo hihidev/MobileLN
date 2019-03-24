@@ -1,40 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="80dp"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:background="@android:color/white">
-    <ImageView android:layout_width="50dp"
-               android:layout_height="50dp"
-               android:layout_margin="15dp"
+    <ImageView android:id="@+id/receive_status_imageview"
+               android:layout_width="25dp"
+               android:layout_height="25dp"
                android:layout_alignParentStart="true"
-               android:layout_centerVertical="true" android:scaleType="fitStart"
-               android:id="@+id/receive_status_imageview"
-               android:src="@drawable/ic_receive_in"
-                />
+               android:layout_centerVertical="true" android:layout_margin="15dp"
+               android:scaleType="fitStart"
+               android:src="@drawable/clock"
+    />
 
-    <TextView android:layout_width="120dp" android:layout_height="60dp"
-                android:text="+XXXXX"
-              android:textSize="22sp"
-              android:layout_centerVertical="true"
-              android:gravity="center"
-              android:id="@+id/receive_amount_textview"
-              android:layout_alignParentRight="true"/>
 
-    <TextView android:id="@+id/from_textview" android:layout_width="240dp"
-              android:layout_height="25dp"
-              android:layout_alignTop="@id/receive_status_imageview"
-              android:layout_toEndOf="@id/receive_status_imageview" android:gravity="center_vertical"
-              android:text="From ABC Company"
-              android:textSize="17sp"/>
-    <TextView android:layout_width="240dp" android:layout_height="25dp"
-              android:layout_alignBottom="@id/receive_status_imageview"
+    <TextView android:id="@+id/receive_description_textview" android:layout_width="240dp"
+              android:layout_height="30dp"
+              android:layout_alignParentTop="true"
               android:layout_toEndOf="@id/receive_status_imageview"
-              android:id="@+id/receive_reference_textview"
-              android:gravity="center_vertical"
-              android:text="abcdef01234567890abcdef0123465678" android:textSize="12sp"/>
+              android:gravity="bottom"
+              android:lines="1"
+              android:text="From ABC Company"
+              android:textSize="17sp"
+              android:textStyle="bold"/>
+    <TextView android:id="@+id/receive_date_textview" android:layout_width="match_parent"
+              android:layout_height="30dp"
+              android:layout_alignParentBottom="true"
+              android:layout_below="@id/receive_description_textview"
+              android:layout_toEndOf="@id/receive_status_imageview"
+              android:gravity="top"
+              android:text="Received: 24/03/2019 03:26:57" android:textSize="16sp"/>
+
+    <TextView android:id="@+id/receive_amount_textview" android:layout_width="120dp"
+              android:layout_height="match_parent"
+              android:layout_alignParentBottom="true"
+              android:layout_alignParentRight="true"
+              android:layout_alignParentTop="true"
+              android:layout_marginEnd="15dp"
+              android:gravity="right|center_vertical"
+              android:text="+XXXXX"
+              android:textSize="16sp"
+              android:textStyle="bold"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/darker_gray"/>
 </RelativeLayout>

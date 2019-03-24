@@ -36,6 +36,8 @@ import com.mobileln.utils.FastSyncUtils;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final boolean DEBUG = false;
+
     private final Fragment mWalletFragment = new WalletFragment();
     private final Fragment mSendFragment = new SendFragment();
     private final Fragment mReceiveFragment = new ReceiveFragment();
@@ -48,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             final FragmentManager fm = getSupportFragmentManager();
             switch (item.getItemId()) {
                 case R.id.navigation_receive:
-                    if (!isNodeReady()) {
+                    if (!DEBUG && !isNodeReady()) {
                         return false;
                     }
                     fm.beginTransaction().replace(R.id.main_container, mReceiveFragment,
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                             "wallet_fragment").commit();
                     return true;
                 case R.id.navigation_send:
-                    if (!isNodeReady()) {
+                    if (!DEBUG && !isNodeReady()) {
                         return false;
                     }
                     fm.beginTransaction().replace(R.id.main_container, mSendFragment,

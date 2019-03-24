@@ -16,14 +16,17 @@ import java.util.Map;
 public class QRUtils {
 
     // TOOD: No hard code value
-    private static final long DIP = 300;
+    private static final long DIP = 10;
 
     public static Bitmap encodeAsBitmap(String str, Resources r) throws WriterException {
-        int size = (int) TypedValue.applyDimension(
+        int marginSize = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 DIP,
                 r.getDisplayMetrics()
         );
+        int widthPixels = r.getDisplayMetrics().widthPixels;
+        int heightPixels = r.getDisplayMetrics().heightPixels;
+        int size = Math.min(widthPixels, heightPixels) - marginSize;
 
         BitMatrix result;
         try {

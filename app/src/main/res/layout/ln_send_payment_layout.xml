@@ -10,8 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="45dp"
-        android:layout_marginStart="45dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginStart="9dp"
         android:orientation="vertical">
         <TextView android:id="@+id/scan_qr_payment"
                   android:layout_width="wrap_content"
@@ -54,6 +54,12 @@
                     android:layout_height="wrap_content" android:layout_margin="3dp" android:layout_weight="0.5"
                     android:enabled="false" android:text="Pay now"/>
         </LinearLayout>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:textSize="24sp" android:textStyle="bold"
+                  android:layout_marginTop="25dp"
+                  android:layout_marginBottom="25dp"
+                  android:text="Outbound payments"/>
 
         <LinearLayout android:id="@+id/payment_sent_list"
                       android:layout_width="match_parent"
