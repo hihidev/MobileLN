@@ -7,6 +7,12 @@ Mobile LN = Bitcoin node + Lightning node app on Android.
 
 
 
+Google Play Store link
+----------------------
+
+https://play.google.com/store/apps/details?id=com.mobileln
+
+
 Features
 --------
 
@@ -64,4 +70,7 @@ Major work / improvement before it is "usable":
 Screenshots
 -----------
 
-![alt text](https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/wallet.png)
+![alt text](https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/wallet.png =360x640)
+![alt text](https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/send.png =360x640)
+![alt text](https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/receive.png =360x640)
+![alt text](https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/channel.png =360x640)
