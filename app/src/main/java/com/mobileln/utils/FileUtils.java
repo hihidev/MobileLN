@@ -21,10 +21,11 @@ public class FileUtils {
     private static final String LIGHTNINGD_DATA_FOLDER_NAME = "lightningd_data";
 
     private static final String ASSETS_FOLDER_NAME = "assets";
-    private static final String BITCOIND_EXECUTABLE = "bitcoind";
-    private static final String BITCOIN_CLI_EXECUTABLE = "bitcoin-cli";
-    private static final String LIGHTNINGD_EXECUTABLE = "lightningd";
-    private static final String LIGHTNING_CLI_EXECUTABLE = "lightning-cli";
+    public static final String EXECUTABLES_FOLDER_NAME = "executables";
+    private static final String BITCOIND_EXECUTABLE = "/bitcoind/bitcoind";
+    private static final String BITCOIN_CLI_EXECUTABLE = "/bitcoind/bitcoin-cli";
+    private static final String LIGHTNINGD_EXECUTABLE = "/lightningd/usr/local/bin/lightningd";
+    private static final String LIGHTNING_CLI_EXECUTABLE = "/lightningd/usr/local/bin/lightning-cli";
     private static final String LIGHTNING_RPC_FILE = "lightningrpc";
     public static final String TMP_FASTSYNC_FILE = "tmpfastsyncfile";
 
@@ -55,7 +56,10 @@ public class FileUtils {
     }
 
     public static String getNativeExecutablesFolder(Context context) throws IOException {
-        return context.getApplicationInfo().nativeLibraryDir;
+        File folder = new File(context.getFilesDir(),
+                ASSETS_FOLDER_NAME + "/" + EXECUTABLES_FOLDER_NAME);
+        folder.mkdirs();
+        return folder.getCanonicalPath();
     }
 
     public static String getBitcoindExecutable(Context context) throws IOException {
@@ -76,10 +80,6 @@ public class FileUtils {
     public static String getLightningCliExecutable(Context context) throws IOException {
         return new File(getNativeExecutablesFolder(context),
                 LIGHTNING_CLI_EXECUTABLE).getCanonicalPath();
-    }
-
-    public static String getAssetsFolderPath(Context context) throws IOException {
-        return getFolderPath(context.getFilesDir(), ASSETS_FOLDER_NAME);
     }
 
     public static String getLightningdRPCPath(Context context) throws IOException {

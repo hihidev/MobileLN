@@ -30,7 +30,7 @@ import com.mobileln.lightningd.LightningdConfig;
 import com.mobileln.ui.ReceiveFragment;
 import com.mobileln.ui.SendFragment;
 import com.mobileln.ui.WalletFragment;
-// import com.mobileln.utils.ExtractResourceUtils;
+import com.mobileln.utils.ExtractResourceUtils;
 import com.mobileln.utils.FastSyncUtils;
 
 public class MainActivity extends AppCompatActivity {
@@ -88,21 +88,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkUpdate() {
         final ProgressDialog dialog;
-//        if (ExtractResourceUtils.requiresUpdate(this)) {
-//            dialog = ProgressDialog.show(this, "",
-//                    "Extracting libraries. Please wait...", true);
-//            dialog.show();
-//            new Thread() {
-//                public void run() {
-//                    try {
-//                        ExtractResourceUtils.extractExecutablesIfNecessary(MainActivity.this,
-//                                false);
-//                        dialog.dismiss();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }.start();
-//        }
+        if (ExtractResourceUtils.requiresUpdate(this)) {
+            dialog = ProgressDialog.show(this, "",
+                    "Extracting libraries. Please wait...", true);
+            dialog.show();
+            new Thread() {
+                public void run() {
+                    try {
+                        ExtractResourceUtils.extractExecutablesIfNecessary(MainActivity.this,
+                                false);
+                        dialog.dismiss();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+        }
     }
 }
