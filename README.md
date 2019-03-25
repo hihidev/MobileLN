@@ -70,7 +70,7 @@ Major work / improvement before it is "usable":
 Screenshots
 -----------
 
-![alt text](https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/wallet.png =360x640)
-![alt text](https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/send.png =360x640)
-![alt text](https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/receive.png =360x640)
-![alt text](https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/channel.png =360x640)
+<img src="https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/wallet.png" width="360" height="640">
+<img src="https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/send.png" width="360" height="640">
+<img src="https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/receive.png" width="360" height="640">
+<img src="https://raw.githubusercontent.com/hihidev/MobileLN/master/screenshots/channel.png" width="360" height="640">
