@@ -39,6 +39,7 @@ import com.mobileln.lightningd.LightningCli;
 import com.mobileln.lightningd.PaymentInfo;
 import com.mobileln.utils.BtcSatUtils;
 import com.mobileln.utils.QRUtils;
+import com.mobileln.utils.UIUtils;
 
 public class ReceiveFragment extends Fragment {
 
@@ -146,7 +147,7 @@ public class ReceiveFragment extends Fragment {
                     return LightningCli.newInstance().generateInvoice(amount,
                             description);
                 } catch (IOException | JSONException e) {
-                    e.printStackTrace();
+                    UIUtils.showErrorToast(getActivity(), e.getMessage());
                     return null;
                 }
             }
@@ -154,7 +155,6 @@ public class ReceiveFragment extends Fragment {
             @Override
             public void onPostExecute(String bolt11) {
                 if (bolt11 == null) {
-                    Toast.makeText(getContext(), "cannot get bolt11", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 updateQRImage(bolt11, amount, description);
@@ -194,7 +194,7 @@ public class ReceiveFragment extends Fragment {
                 try {
                     return LightningCli.newInstance().getPaymentReceived();
                 } catch (IOException | JSONException e) {
-                    Log.i(TAG, "Error", e);
+                    UIUtils.showErrorToast(getActivity(), e.getMessage());
                 }
                 return null;
             }
@@ -203,11 +203,10 @@ public class ReceiveFragment extends Fragment {
             public void onPostExecute(PaymentInfo[] paymentInfos) {
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (paymentInfos == null) {
-                    Toast.makeText(getContext(), "cannot getPaymentReceived",
-                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 mInboundPaymentList = paymentInfos;
+                updatePaymentList(mInboundPaymentList);
             }
         }.execute();
     }

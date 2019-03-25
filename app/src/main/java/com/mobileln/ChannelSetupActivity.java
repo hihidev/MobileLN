@@ -29,12 +29,13 @@ import java.util.List;
 
 import com.mobileln.lightningd.ChannelInfo;
 import com.mobileln.lightningd.LightningCli;
+import com.mobileln.utils.UIUtils;
 
 public class ChannelSetupActivity extends AppCompatActivity {
 
     private static final String TAG = "ChannelSetupActivity";
     private static final String TEST_NODE_ADDR = "0260d9119979caedc570ada883ff614c6efb93f7f7382e25d73ecbeba0b62df2d7@lnd.fun:9735";
-    private static final String TEST_NODE_DEFAULT_DEPOSIT = "10000";
+    private static final String TEST_NODE_DEFAULT_DEPOSIT = "50000";
 
     private ListView mListView;
     private TextView mCreateChannelPeerAddrTextView;
@@ -157,7 +158,6 @@ public class ChannelSetupActivity extends AppCompatActivity {
                         clickedOption.add(i);
                     }
                 })
-                .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -186,6 +186,7 @@ public class ChannelSetupActivity extends AppCompatActivity {
                 try {
                     return LightningCli.newInstance().closeChannel(channelId, force);
                 } catch (IOException | JSONException e) {
+                    UIUtils.showErrorToast(ChannelSetupActivity.this, e.getMessage());
                     return null;
                 }
             }
@@ -193,14 +194,11 @@ public class ChannelSetupActivity extends AppCompatActivity {
             @Override
             public void onPostExecute(Boolean result) {
                 if (result == null) {
-                    Toast.makeText(ChannelSetupActivity.this, "Something wrong",
-                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 new AlertDialog.Builder(ChannelSetupActivity.this)
                         .setTitle("Channel closed")
                         .setMessage("Channel successfully closed")
-                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .setNeutralButton(android.R.string.ok, null)
                         .show();
             }
@@ -223,6 +221,7 @@ public class ChannelSetupActivity extends AppCompatActivity {
                     String peerId = LightningCli.newInstance().connectPeer(peerAddr);
                     return LightningCli.newInstance().fundChannel(peerId, amount);
                 } catch (IOException | JSONException e) {
+                    UIUtils.showErrorToast(ChannelSetupActivity.this, e.getMessage());
                     return null;
                 }
             }
@@ -230,14 +229,11 @@ public class ChannelSetupActivity extends AppCompatActivity {
             @Override
             public void onPostExecute(Boolean result) {
                 if (result == null) {
-                    Toast.makeText(ChannelSetupActivity.this, "Something wrong",
-                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 new AlertDialog.Builder(ChannelSetupActivity.this)
                         .setTitle("Channel created")
                         .setMessage("Channel successfully created")
-                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .setNeutralButton(android.R.string.ok,
                                 new DialogInterface.OnClickListener() {
                                     @Override
@@ -259,6 +255,7 @@ public class ChannelSetupActivity extends AppCompatActivity {
                 try {
                     return LightningCli.newInstance().getChannelList();
                 } catch (IOException | JSONException e) {
+                    UIUtils.showErrorToast(ChannelSetupActivity.this, e.getMessage());
                     return null;
                 }
             }
@@ -266,8 +263,6 @@ public class ChannelSetupActivity extends AppCompatActivity {
             @Override
             public void onPostExecute(ChannelInfo[] channelInfos) {
                 if (channelInfos == null) {
-                    Toast.makeText(ChannelSetupActivity.this, "Something wrong",
-                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (channelInfos.length == 0) {

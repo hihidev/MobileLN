@@ -44,6 +44,7 @@ import com.mobileln.lightningd.LightningCli;
 import com.mobileln.lightningd.LightningdConfig;
 import com.mobileln.utils.BtcSatUtils;
 import com.mobileln.utils.FastSyncUtils;
+import com.mobileln.utils.UIUtils;
 
 public class WalletFragment extends Fragment {
 
@@ -270,6 +271,24 @@ public class WalletFragment extends Fragment {
                 if (!isNodeReady()) {
                     return;
                 }
+                if (mTotalBalanceTextView.getText().toString().equals("0")) {
+                    new AlertDialog.Builder(getActivity(),
+                            R.style.Theme_MaterialComponents_Light_Dialog_Alert)
+                            .setTitle("Welcome")
+                            .setMessage(
+                                    "Please get some funds into wallet before creating a channel")
+                            .setPositiveButton(android.R.string.ok,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface,
+                                                int i) {
+                                            startActivity(new Intent(getActivity(),
+                                                    BitcoinWalletActivity.class));
+                                        }
+                                    })
+                            .show();
+                    return;
+                }
                 startActivity(new Intent(getActivity(), ChannelSetupActivity.class));
             }
         });
@@ -353,6 +372,7 @@ public class WalletFragment extends Fragment {
                     long btcBalance = LightningCli.newInstance().getConfirmedBtcBalanceInWallet();
                     return Pair.create(channelBalance, btcBalance);
                 } catch (IOException | JSONException e) {
+                    UIUtils.showErrorToast(getActivity(), e.getMessage());
                     return null;
                 }
             }
@@ -361,7 +381,6 @@ public class WalletFragment extends Fragment {
             protected void onPostExecute(Pair<Long, Long> result) {
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (result == null) {
-                    Toast.makeText(getContext(), "Error", Toast.LENGTH_LONG).show();
                     return;
                 }
                 Pair<String, String> channelBal = BtcSatUtils.sat2StringPair(result.first);

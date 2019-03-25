@@ -98,13 +98,13 @@ public class LightningCli extends ProcessHelper {
     public synchronized JSONObject getJSONResponse(Context context, String[] args)
             throws IOException, JSONException {
         // TODO: Remove this retry loop when it's stable ?
-        for (int i = 0; i < 5; i++) {
-            try {
-                return getJSONResponseInternal(context, args);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        for (int i = 0; i < 0; i++) {
+//            try {
+//                return getJSONResponseInternal(context, args);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
         return getJSONResponseInternal(context, args);
     }
 
@@ -275,6 +275,11 @@ public class LightningCli extends ProcessHelper {
     public String generateInvoice(long sat, String description) throws IOException, JSONException {
         JSONObject json = getJSONResponse(MyApplication.getContext(),
                 new String[]{"invoice", String.valueOf(sat * 1000), description, description});
+        if (json.has("warning_capacity")) {
+            getJSONResponse(MyApplication.getContext(),
+                    new String[]{"delinvoice", description, "unpaid"});
+            throw new IOException(json.getString("warning_capacity"));
+        }
         return json.getString("bolt11");
     }
 

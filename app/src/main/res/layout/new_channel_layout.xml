@@ -35,12 +35,6 @@
         android:layout_height="wrap_content"
         android:text="@string/create_channel_btn"
     />
-    <TextView android:id="@+id/create_channel_no_connected_channel"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:text="You have no connected channels yet."
-              android:textSize="18sp"
-              android:visibility="gone"/>
     <android.support.design.button.MaterialButton
         android:id="@+id/connect_to_test_channel"
         android:layout_width="wrap_content"
@@ -55,4 +49,10 @@
               android:text="Connected channels"
               android:textSize="24sp"
               android:textStyle="bold"/>
+    <TextView android:id="@+id/create_channel_no_connected_channel"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="You have no connected channels yet."
+              android:textSize="18sp"
+              android:visibility="gone"/>
 </android.support.v7.widget.LinearLayoutCompat>

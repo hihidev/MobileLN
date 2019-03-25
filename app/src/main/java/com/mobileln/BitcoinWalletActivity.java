@@ -31,6 +31,7 @@ import java.io.IOException;
 import com.mobileln.lightningd.LightningCli;
 import com.mobileln.utils.BtcSatUtils;
 import com.mobileln.utils.QRUtils;
+import com.mobileln.utils.UIUtils;
 
 public class BitcoinWalletActivity extends AppCompatActivity {
 
@@ -120,6 +121,7 @@ public class BitcoinWalletActivity extends AppCompatActivity {
                     String[] addresses = LightningCli.newInstance().getMyBech32Addresses();
                     return addresses[addresses.length - 1];
                 } catch (IOException | JSONException e) {
+                    UIUtils.showErrorToast(BitcoinWalletActivity.this, e.getMessage());
                     return null;
                 }
             }
@@ -127,8 +129,6 @@ public class BitcoinWalletActivity extends AppCompatActivity {
             @Override
             public void onPostExecute(String str) {
                 if (str == null) {
-                    Toast.makeText(BitcoinWalletActivity.this, "cannot get address",
-                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 try {
@@ -151,6 +151,7 @@ public class BitcoinWalletActivity extends AppCompatActivity {
                 try {
                     return LightningCli.newInstance().getConfirmedBtcBalanceInWallet();
                 } catch (IOException | JSONException e) {
+                    UIUtils.showErrorToast(BitcoinWalletActivity.this, e.getMessage());
                     return Long.valueOf(-1);
                 }
             }

@@ -15,8 +15,8 @@ public class ProcessHelper {
     private static final String TAG = "ProcessHelper";
 
     private String[] mExecutableAndArgs = null;
-    private Thread mRunningThread = null;
-    private Process mProcess = null;
+    private volatile Thread mRunningThread = null;
+    private volatile Process mProcess = null;
     private CircularArray mCircularArray;
     private boolean mRedirectError = false;
 
@@ -63,11 +63,10 @@ public class ProcessHelper {
         }
         mProcess = builder.start();
         final Process process = mProcess;
-        mLogStringDone = new CountDownLatch(1);
+        mLogStringDone = new CountDownLatch(2);
         mRunningThread = new Thread() {
             @Override
             public void run() {
-                Log.i(TAG, "Start processing: " + tag);
                 try {
                     try (InputStream inputStream = process.getInputStream()) {
                         BufferedReader bufferedReader = new BufferedReader(
@@ -84,33 +83,19 @@ public class ProcessHelper {
                                 mLogStringBuffer.append('\n');
                             }
                         }
-                        Log.e(TAG, "No more lines?");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } finally {
-                    Log.e(TAG, "Finish processing: " + tag);
                     mLogStringDone.countDown();
                 }
             }
         };
-        new Thread() {
-            public void run() {
-                try {
-                    mProcess.waitFor();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                mProcess = null;
-                mRunningThread = null;
-            }
-        }.start();
-        // TODO: Fix dirty code
-        if (mCircularArray != null) {
+        if (!mRedirectError) {
             new Thread() {
                 @Override
                 public void run() {
-                    try (InputStream inputStream = mProcess.getErrorStream()){
+                    try (InputStream inputStream = process.getErrorStream()){
                         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                         while (bufferedReader.readLine() != null) {
                         }
@@ -120,15 +105,34 @@ public class ProcessHelper {
             }.start();
         }
         mRunningThread.start();
+        new Thread() {
+            public void run() {
+                try {
+                    process.waitFor();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mProcess = null;
+                mRunningThread = null;
+                mLogStringDone.countDown();
+            }
+        }.start();
     }
 
     protected synchronized void stopProcess() {
         if (mRunningThread == null) {
-            Log.e(TAG, "mRunningThread is null, skip stop");
+            // Log.e(TAG, "mRunningThread is null, skip stop");
         }
-        if (mProcess != null) {
-            mProcess.destroy();
+        final Process process = mProcess;
+        if (process != null) {
+            process.destroy();
             Log.e(TAG, "DESTROY JOR!!!!");
+            try {
+                String s = null;
+                s.equals("");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

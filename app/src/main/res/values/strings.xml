@@ -26,10 +26,10 @@
     <string name="pay_description">Description</string>
     <string name="withdraw_btc_address">Withdraw BTC address</string>
     <string name="btc_wallet_balance">Bitcoin wallet balance</string>
-    <string name="withdraw_btc_amount">Amount (sat)</string>
+    <string name="withdraw_btc_amount">Amount (sat) or \'all\'</string>
     <string name="my_node_address">My node address</string>
     <string name="create_channel_peer_address">Peer address</string>
-    <string name="create_channel_amount_sat">Amount (SAT)</string>
+    <string name="create_channel_amount_sat">Fund amount (SAT) (It\'s still your money!)</string>
     <string name="create_channel_btn">Create channel</string>
     <string name="node_service_title">Mobile LN service is running</string>
     <string name="node_service_content_text">Tap to open Mobile LN</string>

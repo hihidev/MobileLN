@@ -35,6 +35,7 @@ import com.mobileln.R;
 import com.mobileln.lightningd.LightningCli;
 import com.mobileln.lightningd.PaymentInfo;
 import com.mobileln.utils.BtcSatUtils;
+import com.mobileln.utils.UIUtils;
 
 public class SendFragment extends Fragment {
 
@@ -153,6 +154,10 @@ public class SendFragment extends Fragment {
                 if (paymentInfo == null) {
                     mAmountTextView.setText("------");
                     mDescriptionTextView.setText("------");
+                    mValidInvoice = false;
+                    mPayDescription = "";
+                    mPayAmount = 0;
+                    mPayNowBtn.setEnabled(false);
                     return;
                 }
                 mAmountTextView.setText(BtcSatUtils.sat2String(paymentInfo.satAmount));
@@ -204,6 +209,7 @@ public class SendFragment extends Fragment {
                 try {
                     return LightningCli.newInstance().getPaymentSent();
                 } catch (IOException | JSONException e) {
+                    UIUtils.showErrorToast(getActivity(), e.getMessage());
                     return null;
                 }
             }
@@ -211,8 +217,6 @@ public class SendFragment extends Fragment {
             @Override
             public void onPostExecute(PaymentInfo[] paymentInfos) {
                 if (paymentInfos == null) {
-                    Toast.makeText(getContext(), "cannot update payment",
-                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 int paymentCount = paymentInfos.length;
