@@ -15,11 +15,14 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import com.mobileln.bitcoind.BitcoinCli;
 import com.mobileln.bitcoind.Bitcoind;
 import com.mobileln.bitcoind.BitcoindState;
+import com.mobileln.lightningd.LightningCli;
 import com.mobileln.lightningd.Lightningd;
 import com.mobileln.lightningd.LightningdState;
 import com.mobileln.utils.FastSyncUtils;
+import com.mobileln.utils.WalletStateSharedPrefs;
 
 public class NodeService extends Service {
 
@@ -156,6 +159,31 @@ public class NodeService extends Service {
                     if (!sRunning) {
                         return;
                     }
+                    // TODO: No hard code
+                    // Only cache top 1000 watch-only index to monitor unconfirmed balance
+                    // 640K ram should be enough
+                    final int MAX_WATCH_ONLY_INDEX = 1000;
+                    final WalletStateSharedPrefs prefs = new WalletStateSharedPrefs(
+                            getApplicationContext());
+                    int maxIndex = prefs.getWatchOnlyMaxIndex();
+                    if (maxIndex < MAX_WATCH_ONLY_INDEX) {
+                        boolean done = false;
+                        while (!done) {
+                            try {
+                                String[] addresses = LightningCli.newInstance().getListAddrs(
+                                        MAX_WATCH_ONLY_INDEX);
+                                for (String address : addresses) {
+                                    BitcoinCli.addWatchOnlyAddress(address);
+                                }
+                                prefs.saveWatchOnlyMaxIndex(MAX_WATCH_ONLY_INDEX);
+                                done = true;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Thread.sleep(1000);
+                            }
+                        }
+                    }
+
                     setCurrentState(NodeState.ALL_READY, false);
                 } catch (Exception e) {
                     e.printStackTrace();

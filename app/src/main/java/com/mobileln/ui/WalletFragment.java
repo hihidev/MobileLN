@@ -38,6 +38,7 @@ import com.mobileln.MyApplication;
 import com.mobileln.NodeService;
 import com.mobileln.R;
 import com.mobileln.SettingsActivity;
+import com.mobileln.bitcoind.BitcoinCli;
 import com.mobileln.bitcoind.BitcoindConfig;
 import com.mobileln.bitcoind.BitcoindState;
 import com.mobileln.lightningd.LightningCli;
@@ -370,7 +371,8 @@ public class WalletFragment extends Fragment {
                 try {
                     long channelBalance = LightningCli.newInstance().getConfirmedBalanceInChannels();
                     long btcBalance = LightningCli.newInstance().getConfirmedBtcBalanceInWallet();
-                    return Pair.create(channelBalance, btcBalance);
+                    long unconfirmedBtcBalance = BitcoinCli.getUnconfirmedBalance(1);
+                    return Pair.create(channelBalance, btcBalance + unconfirmedBtcBalance);
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(getActivity(), e.getMessage());
                     return null;

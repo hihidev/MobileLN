@@ -189,7 +189,8 @@ public class LightningCli extends ProcessHelper {
             long sat = obj.getLong("msatoshi") / 1000;
             long createdAt = obj.getLong("created_at");
             boolean completed = "complete".equals(obj.getString("status"));
-            result[i] = new PaymentInfo(description, bolt11, paymentHash, sat, completed, createdAt);
+            result[i] = new PaymentInfo(description, bolt11, paymentHash, sat, completed,
+                    createdAt);
         }
         return result;
     }
@@ -267,7 +268,7 @@ public class LightningCli extends ProcessHelper {
             throws IOException, JSONException {
         JSONObject json = getJSONResponse(MyApplication.getContext(),
                 new String[]{"withdraw", withdrawalAddr,
-                        withdrawAll ? "all" : String.valueOf(amount * 1000)});
+                        withdrawAll ? "all" : String.valueOf(amount)});
         return json.getString("txid");
     }
 
@@ -327,5 +328,18 @@ public class LightningCli extends ProcessHelper {
         getJSONResponse(MyApplication.getContext(),
                 new String[]{"fundchannel", peerId, String.valueOf(amount)});
         return true;
+    }
+
+    @WorkerThread
+    public String[] getListAddrs(int maxIndex) throws IOException, JSONException {
+        JSONObject json = getJSONResponse(MyApplication.getContext(),
+                new String[]{"dev-listaddrs", String.valueOf(maxIndex)});
+        JSONArray jsonArray = json.getJSONArray("addresses");
+        int len = jsonArray.length();
+        ArrayList<String> result = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            result.add(jsonArray.getJSONObject(i).getString("bech32"));
+        }
+        return result.toArray(new String[0]);
     }
 }

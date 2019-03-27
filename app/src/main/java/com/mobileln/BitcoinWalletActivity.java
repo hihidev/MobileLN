@@ -13,7 +13,9 @@ import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Pair;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,6 +30,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
+import com.mobileln.bitcoind.BitcoinCli;
 import com.mobileln.lightningd.LightningCli;
 import com.mobileln.utils.BtcSatUtils;
 import com.mobileln.utils.QRUtils;
@@ -42,6 +45,8 @@ public class BitcoinWalletActivity extends AppCompatActivity {
     private Button mBtcWithdrawalBtn;
     private ImageView mBtcWithdrawalCameraImageView;
     private TextView mBtcBalanceTextView;
+    private TextView mBtcUnconfirmedBalanceTextView;
+    private View mBtcUnconfirmedBalanceLayout;
     private Button mGetTestCoinFromFaucetButton;
 
     @Override
@@ -54,15 +59,13 @@ public class BitcoinWalletActivity extends AppCompatActivity {
         mBtcWithdrawalBtn = findViewById(R.id.btc_withdrawal_button);
         mBtcWithdrawalAmountEditText = findViewById(R.id.btc_withdrawal_amount);
         mBtcBalanceTextView = findViewById(R.id.btc_wallet_balance_textview);
+        mBtcUnconfirmedBalanceTextView = findViewById(R.id.btc_wallet_unconfirmed_balance_textview);
+        mBtcUnconfirmedBalanceLayout = findViewById(R.id.btc_wallet_unconfirmed_balance_layout);
         mGetTestCoinFromFaucetButton = findViewById(R.id.receive_test_coin_from_faucet_button);
         mGetTestCoinFromFaucetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                CustomTabsIntent customTabsIntent = builder.build();
-                customTabsIntent.launchUrl(BitcoinWalletActivity.this,
-                        Uri.parse("https://tbtc.bitaps.com/"));
-                copyBtcAddressToClipBoard("Deposit address copied.\nPlease paste it to the address field.");
+                showTestnetFaucetDialog();
             }
         });
         mGetTestCoinFromFaucetButton.setVisibility(
@@ -144,21 +147,34 @@ public class BitcoinWalletActivity extends AppCompatActivity {
 
 
     private void updateWalletBalanceAsync() {
-        new AsyncTask<Void, Void, Long>() {
+        new AsyncTask<Void, Void, Pair<Long, Long>>() {
 
             @Override
-            protected Long doInBackground(Void... voids) {
+            protected Pair<Long, Long> doInBackground(Void... voids) {
                 try {
-                    return LightningCli.newInstance().getConfirmedBtcBalanceInWallet();
+                    long unconfirmedBtcBalance = BitcoinCli.getUnconfirmedBalance(1);
+                    long confirmedBalance =
+                            LightningCli.newInstance().getConfirmedBtcBalanceInWallet();
+                    return Pair.create(unconfirmedBtcBalance, confirmedBalance);
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(BitcoinWalletActivity.this, e.getMessage());
-                    return Long.valueOf(-1);
+                    return null;
                 }
             }
 
             @Override
-            protected void onPostExecute(Long result) {
-                mBtcBalanceTextView.setText(BtcSatUtils.sat2String(result));
+            protected void onPostExecute(Pair<Long, Long> result) {
+                if (result == null) {
+                    return;
+                }
+                if (result.first != 0) {
+                    mBtcUnconfirmedBalanceLayout.setVisibility(View.VISIBLE);
+                    mBtcUnconfirmedBalanceTextView.setText(
+                            (result.first > 0 ? "+" : "") + BtcSatUtils.sat2String(result.first));
+                } else {
+                    mBtcUnconfirmedBalanceLayout.setVisibility(View.GONE);
+                }
+                mBtcBalanceTextView.setText(BtcSatUtils.sat2String(result.second));
             }
         }.execute();
     }
@@ -231,5 +247,29 @@ public class BitcoinWalletActivity extends AppCompatActivity {
                         .show();
             }
         });
+    }
+
+    private void showTestnetFaucetDialog() {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+        builderSingle.setTitle("Select website");
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.select_dialog_singlechoice);
+        arrayAdapter.add("https://coinfaucet.eu/en/btc-testnet/");
+        arrayAdapter.add("https://testnet-faucet.mempool.co/");
+        arrayAdapter.add("http://tbtc.bitaps.com/");
+        arrayAdapter.add("http://bitcoinfaucet.uo1.net/");
+        arrayAdapter.add("https://kuttler.eu/en/bitcoin/btc/faucet/");
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(BitcoinWalletActivity.this,
+                        Uri.parse(arrayAdapter.getItem(which)));
+                copyBtcAddressToClipBoard(
+                        "Deposit address copied.\nPlease paste it to the address field.");
+            }
+        });
+        builderSingle.show();
     }
 }

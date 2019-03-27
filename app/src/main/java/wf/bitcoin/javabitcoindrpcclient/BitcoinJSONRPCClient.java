@@ -544,6 +544,12 @@ public class BitcoinJSONRPCClient implements BitcoindRpcClient {
 
   @Override
   @SuppressWarnings("unchecked")
+  public List<Transaction> listTransactions(String account, int count, int skip, boolean watchOnly) throws GenericRpcException {
+    return new TransactionListMapWrapper((List<Map<String, ?>>) query("listtransactions", account, count, skip, watchOnly));
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
   public List<Unspent> listUnspent() throws GenericRpcException {
     return new UnspentListWrapper((List<Map<String, ?>>) query("listunspent"));
   }

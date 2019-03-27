@@ -127,12 +127,6 @@ public class ProcessHelper {
         if (process != null) {
             process.destroy();
             Log.e(TAG, "DESTROY JOR!!!!");
-            try {
-                String s = null;
-                s.equals("");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 

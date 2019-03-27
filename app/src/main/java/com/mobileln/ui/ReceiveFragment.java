@@ -116,6 +116,7 @@ public class ReceiveFragment extends Fragment {
     public void onPause() {
         super.onPause();
         unregisterPaymentReceivedListener();
+        clearPendingPayment();
     }
 
     private void showGenerateInvoiceDialog() {
@@ -283,7 +284,7 @@ public class ReceiveFragment extends Fragment {
                     try {
                         final PaymentInfo paymentInfo = LightningCli.newInstance().getInvoiceInfo(
                                 label);
-                        if (paymentInfo.completed) {
+                        if (paymentInfo != null && paymentInfo.completed) {
                             unregisterPaymentReceivedListener();
                             final Activity activity = getActivity();
                             if (activity == null) {

@@ -948,6 +948,7 @@ public interface BitcoindRpcClient {
    * @see <a href="https://bitcoin.org/en/developer-reference#listtransactions">listtransactions</a>
    */
   List<Transaction> listTransactions(String account, int count, int skip) throws GenericRpcException;
+  List<Transaction> listTransactions(String account, int count, int skip, boolean watchOnly) throws GenericRpcException;
 
  /**
   * The listunspent RPC returns an array of unspent transaction outputs belonging to this wallet.

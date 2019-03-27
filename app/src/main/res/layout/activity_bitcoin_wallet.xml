@@ -27,10 +27,29 @@
                                                          android:layout_height="wrap_content"
                                                          android:gravity="center"
                                                          android:layout_marginTop="30dp"
-                                                         android:layout_marginBottom="30dp"
                                                          android:textStyle="bold"
                                                          android:text="12345 BTC"
                                                          android:textSize="42sp"/>
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:id="@+id/btc_wallet_unconfirmed_balance_layout"
+                          android:layout_marginBottom="30dp"
+                          android:gravity="center"
+                          android:orientation="horizontal">
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Unconfirmed: "
+                    android:textSize="18sp"/>
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/btc_wallet_unconfirmed_balance_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="xxx BTC"
+                    android:textSize="18sp"/>
+            </LinearLayout>
             <android.support.design.button.MaterialButton
                 android:id="@+id/receive_test_coin_from_faucet_button"
                 android:visibility="gone"
