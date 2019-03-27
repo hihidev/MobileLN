@@ -269,6 +269,14 @@ public class NodeService extends Service {
         return sTestnet;
     }
 
+    public static int getMinConfirmation() {
+        if (sTestnet) {
+            return 1;
+        } else {
+            return 1;
+        }
+    }
+
     public static boolean isRunning() {
         return sRunning;
     }

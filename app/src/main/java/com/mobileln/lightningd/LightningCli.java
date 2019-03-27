@@ -154,7 +154,7 @@ public class LightningCli extends ProcessHelper {
             for (int j = 0; j < channelsLen; j++) {
                 JSONObject channel = channels.getJSONObject(j);
                 String state = channel.getString("state");
-                if (!"ONCHAIN".equals(state)) {
+                if (ChannelInfo.State.CHANNELD_NORMAL.equals(state)) {
                     result += channel.getLong("msatoshi_to_us") / 1000;
                 }
 
