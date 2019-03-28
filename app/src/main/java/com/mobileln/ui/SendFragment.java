@@ -230,6 +230,7 @@ public class SendFragment extends Fragment {
                             .setNeutralButton(android.R.string.ok, null)
                             .show();
                 }
+                updatePaymentSentAsync();
             }
         }.execute();
     }
