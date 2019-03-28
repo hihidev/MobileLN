@@ -21,6 +21,10 @@ import com.mobileln.utils.ProcessHelper;
 // lightning-cli is updated
 public class LightningCli extends ProcessHelper {
     private static final String TAG = "Lightning-cli";
+    private static volatile long sCachedInboundCapacity = -1;
+    private static volatile long sCachedOutboundCapacity = -1;
+    private static volatile long sCachedInChannelBalance = -1;
+    private static volatile long sCachedOnChainBalance = -1;
 
     private LightningCli(boolean redirectError) {
         super(redirectError);
@@ -138,7 +142,20 @@ public class LightningCli extends ProcessHelper {
                 result += obj.getLong("value");
             }
         }
+        sCachedOnChainBalance = result;
         return result;
+    }
+
+    public static long getCachedOnChainBalance() {
+        return sCachedOnChainBalance;
+    }
+
+    public static long getCachedInboundCapacity() {
+        return sCachedInboundCapacity;
+    }
+
+    public static long getCachedOutboundCapacity() {
+        return sCachedOutboundCapacity;
     }
 
     @WorkerThread
@@ -160,18 +177,12 @@ public class LightningCli extends ProcessHelper {
 
             }
         }
+        sCachedInChannelBalance = result;
         return result;
+    }
 
-        // Seems it also list closed channel...=0=...so we use listpeers instead
-//        JSONObject json = getJSONResponse(MyApplication.getContext(), new String[]{"listfunds"});
-//        JSONArray jsonArray = json.getJSONArray("channels");
-//        int len = jsonArray.length();
-//        long result = 0;
-//        for (int i = 0; i < len; i++) {
-//            JSONObject obj = jsonArray.getJSONObject(i);
-//            result += obj.getLong("channel_sat");
-//        }
-//        return result;
+    public static long getCachedInChannelBalance() {
+        return sCachedInChannelBalance;
     }
 
     @WorkerThread
@@ -285,11 +296,18 @@ public class LightningCli extends ProcessHelper {
     }
 
     @WorkerThread
+    public void updateCachedInOutboundCapacity() throws IOException, JSONException {
+        getChannelList();
+    }
+
+    @WorkerThread
     public ChannelInfo[] getChannelList() throws IOException, JSONException {
         JSONObject json = getJSONResponse(MyApplication.getContext(), new String[]{"listpeers"});
         ArrayList<ChannelInfo> result = new ArrayList<>();
         JSONArray peers = json.getJSONArray("peers");
         int peersLen = peers.length();
+        long inboundCap = 0;
+        long outboundCap = 0;
         for (int i = 0; i < peersLen; i++) {
             JSONObject peer = peers.getJSONObject(i);
             JSONArray channels = peer.getJSONArray("channels");
@@ -302,10 +320,14 @@ public class LightningCli extends ProcessHelper {
                 long channelTotalSat = channel.getLong("msatoshi_total") / 1000;
                 long outCapacitySat = channel.getLong("msatoshi_to_us") / 1000;
                 long inCapacitySat = channelTotalSat - outCapacitySat;
+                inboundCap += inCapacitySat;
+                outboundCap += outCapacitySat;
                 result.add(new ChannelInfo(channelId, state, name, channelTotalSat, inCapacitySat,
                         outCapacitySat));
             }
         }
+        sCachedInboundCapacity = inboundCap;
+        sCachedOutboundCapacity = outboundCap;
         return result.toArray(new ChannelInfo[0]);
     }
 

@@ -340,7 +340,11 @@ public class WalletFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
+        long cachedChannelBal = LightningCli.getCachedInChannelBalance();
+        long cachedChainBal = LightningCli.getCachedOnChainBalance() + BitcoinCli.getCachedUnconfirmedBalance();
+        if (cachedChannelBal >= 0 && cachedChainBal >= 0) {
+            updateBalanceUI(cachedChannelBal, cachedChainBal);
+        }
         return view;
     }
 
@@ -386,16 +390,20 @@ public class WalletFragment extends Fragment {
                 if (result == null) {
                     return;
                 }
-                Pair<String, String> channelBal = BtcSatUtils.sat2StringPair(result.first);
-                Pair<String, String> chainBal = BtcSatUtils.sat2StringPair(result.second);
-                Pair<String, String> totalBal = BtcSatUtils.sat2StringPair(result.first + result.second);
-                mChannelBalanceTextView.setText(channelBal.first);
-                mChannelBalanceUnitTextView.setText(channelBal.second);
-                mChainBalanceTextView.setText(chainBal.first);
-                mChainBalanceUnitTextView.setText(chainBal.second);
-                mTotalBalanceTextView.setText(totalBal.first);
-                mTotalBalanceUnitTextView.setText(totalBal.second);
+                updateBalanceUI(result.first, result.second);
             }
         }.execute();
+    }
+
+    private void updateBalanceUI(long channelBalance, long chainBalance) {
+        Pair<String, String> channelBal = BtcSatUtils.sat2StringPair(channelBalance);
+        Pair<String, String> chainBal = BtcSatUtils.sat2StringPair(chainBalance);
+        Pair<String, String> totalBal = BtcSatUtils.sat2StringPair(channelBalance + chainBalance);
+        mChannelBalanceTextView.setText(channelBal.first);
+        mChannelBalanceUnitTextView.setText(channelBal.second);
+        mChainBalanceTextView.setText(chainBal.first);
+        mChainBalanceUnitTextView.setText(chainBal.second);
+        mTotalBalanceTextView.setText(totalBal.first);
+        mTotalBalanceUnitTextView.setText(totalBal.second);
     }
 }

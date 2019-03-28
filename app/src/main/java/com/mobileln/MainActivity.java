@@ -26,6 +26,7 @@ import java.util.Map;
 
 import com.mobileln.bitcoind.BitcoindConfig;
 import com.mobileln.bitcoind.BitcoindState;
+import com.mobileln.lightningd.LightningCli;
 import com.mobileln.lightningd.LightningdConfig;
 import com.mobileln.ui.ReceiveFragment;
 import com.mobileln.ui.SendFragment;
@@ -49,10 +50,23 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             final FragmentManager fm = getSupportFragmentManager();
+            final long inCap = LightningCli.getCachedInboundCapacity();
+            final long outCap = LightningCli.getCachedOutboundCapacity();
             switch (item.getItemId()) {
                 case R.id.navigation_receive:
                     if (!DEBUG && !isNodeReady()) {
-                        UIUtils.showErrorToast(MainActivity.this, "Mobile LN service is not connected yet");
+                        UIUtils.showToast(MainActivity.this, "Please start Mobile LN service first");
+                        return false;
+                    }
+                    if (inCap < 0) {
+                        return false;
+                    }
+                    if (inCap == 0) {
+                        if (outCap == 0) {
+                            UIUtils.showToast(MainActivity.this, "Please create a channel first");
+                        } else {
+                            UIUtils.showToast(MainActivity.this, "Please fund your inbound channel first");
+                        }
                         return false;
                     }
                     fm.beginTransaction().replace(R.id.main_container, mReceiveFragment,
@@ -64,7 +78,18 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_send:
                     if (!DEBUG && !isNodeReady()) {
-                        UIUtils.showErrorToast(MainActivity.this, "Mobile LN service is not connected yet");
+                        UIUtils.showToast(MainActivity.this, "Please start Mobile LN service first");
+                        return false;
+                    }
+                    if (outCap < 0) {
+                        return false;
+                    }
+                    if (outCap == 0) {
+                        if (inCap == 0) {
+                            UIUtils.showToast(MainActivity.this, "Please create a channel first");
+                        } else {
+                            UIUtils.showToast(MainActivity.this, "Please fund your inbound channel first");
+                        }
                         return false;
                     }
                     fm.beginTransaction().replace(R.id.main_container, mSendFragment,

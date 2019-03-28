@@ -151,8 +151,8 @@ public class ChannelSetupActivity extends AppCompatActivity {
             viewHolder.channelColor.setCardBackgroundColor(
                     channelInfo.state.equals(ChannelInfo.State.CHANNELD_NORMAL) ? 0xFF00FF00
                             : 0xFFFFFF00);
-            viewHolder.myBal.setText("My bal:" + channelInfo.myBal);
-            viewHolder.oppBal.setText("Opp bal:" + channelInfo.oppBal);
+            viewHolder.myBal.setText("Outbound cap:" + channelInfo.myBal);
+            viewHolder.oppBal.setText("Inbound cap:" + channelInfo.oppBal);
             viewHolder.channelId = channelInfo.channelId;
             return convertView;
         }

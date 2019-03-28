@@ -10,6 +10,9 @@ import wf.bitcoin.javabitcoindrpcclient.BitcoinRPCException;
 import wf.bitcoin.javabitcoindrpcclient.BitcoindRpcClient;
 
 public class BitcoinCli {
+
+    private volatile static long sCachedUnconfirmedBalance = -1;
+
     private static BitcoinJSONRPCClient getClient() {
         String username = Bitcoind.getInstance().getRpcUserName();
         String password = Bitcoind.getInstance().getRpcPassowrd();
@@ -49,10 +52,15 @@ public class BitcoinCli {
                     }
                 }
             }
+            sCachedUnconfirmedBalance = result;
             return result;
         } catch (BitcoinRPCException | UnsupportedOperationException e) {
             throw new BitcoinRPCException(e.getMessage());
         }
+    }
+
+    public static long getCachedUnconfirmedBalance() {
+        return sCachedUnconfirmedBalance;
     }
 
     public static void addWatchOnlyAddress(String address) {

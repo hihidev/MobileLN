@@ -163,6 +163,7 @@ public class NodeService extends Service {
                     if (!sRunning) {
                         return;
                     }
+                    LightningCli.newInstance().updateCachedInOutboundCapacity();
                     // TODO: No hard code
                     // Only cache top 1000 watch-only index to monitor unconfirmed balance
                     // 640K ram should be enough
