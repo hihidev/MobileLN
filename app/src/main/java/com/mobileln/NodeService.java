@@ -57,7 +57,7 @@ public class NodeService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(intent != null) {
+        if (intent != null) {
             String action = intent.getAction();
             switch (action) {
                 case ACTION_START_FOREGROUND_SERVICE:
@@ -90,7 +90,7 @@ public class NodeService extends Service {
             public void run() {
                 try {
                     int i = 0;
-                    while(sRunning && FastSyncUtils.isPendingFastSyncWork(NodeService.this)) {
+                    while (sRunning && FastSyncUtils.isPendingFastSyncWork(NodeService.this)) {
                         Log.i(TAG, "Waiting for fast sync work: " + i++);
                         int status = FastSyncUtils.getDownloadStatus(NodeService.this);
                         if (status == DownloadManager.STATUS_SUCCESSFUL) {
@@ -119,7 +119,8 @@ public class NodeService extends Service {
                             FastSyncUtils.startDownloadFastSyncDb(NodeService.this);
                         }
                         Thread.sleep(1000);
-                        Log.i(TAG, "Download progress: " + FastSyncUtils.downloadProgress(NodeService.this));
+                        Log.i(TAG, "Download progress: " + FastSyncUtils.downloadProgress(
+                                NodeService.this));
                         setCurrentState(NodeState.DOWNLOAD_FASTSYNC, true);
                     }
                     if (!sRunning) {
@@ -128,7 +129,8 @@ public class NodeService extends Service {
                     Bitcoind.getInstance().startService(getApplicationContext());
                     setCurrentState(NodeState.STARTING_BITCOIND, false);
                     i = 0;
-                    while(sRunning && BitcoindState.getInstance().getCurrentState() <= BitcoindState.STATE_STARTING) {
+                    while (sRunning && BitcoindState.getInstance().getCurrentState()
+                            <= BitcoindState.STATE_STARTING) {
                         Log.i(TAG, "Waiting for bitcoind start: " + i++);
                         Thread.sleep(1000);
                     }
@@ -136,7 +138,8 @@ public class NodeService extends Service {
                         return;
                     }
                     i = 0;
-                    while(sRunning && BitcoindState.getInstance().getCurrentState() <= BitcoindState.STATE_SYNCING) {
+                    while (sRunning && BitcoindState.getInstance().getCurrentState()
+                            <= BitcoindState.STATE_SYNCING) {
                         Log.i(TAG, "Waiting for bitcoind sync ready: " + i++);
                         Thread.sleep(1000);
                         setCurrentState(NodeState.SYNCING_BITCOIND, true);
@@ -152,7 +155,8 @@ public class NodeService extends Service {
                         return;
                     }
                     i = 0;
-                    while(sRunning && LightningdState.getInstance().getCurrentState() != LightningdState.STATE_READY) {
+                    while (sRunning && LightningdState.getInstance().getCurrentState()
+                            != LightningdState.STATE_READY) {
                         Log.i(TAG, "Waiting for lightningd ready: " + i++);
                         Thread.sleep(1000);
                     }
@@ -207,7 +211,8 @@ public class NodeService extends Service {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(getString(R.string.notification_channel_id),
+            NotificationChannel channel = new NotificationChannel(
+                    getString(R.string.notification_channel_id),
                     getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW);
             channel.setDescription(getString(R.string.app_name));
             channel.setShowBadge(false);
@@ -225,7 +230,7 @@ public class NodeService extends Service {
         setCurrentState(NodeState.DISCONNECTING, false);
         new Thread() {
             public void run() {
-                while(Bitcoind.getInstance().isRunning()) {
+                while (Bitcoind.getInstance().isRunning()) {
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {

@@ -32,6 +32,7 @@ import com.mobileln.ui.SendFragment;
 import com.mobileln.ui.WalletFragment;
 import com.mobileln.utils.ExtractResourceUtils;
 import com.mobileln.utils.FastSyncUtils;
+import com.mobileln.utils.UIUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_receive:
                     if (!DEBUG && !isNodeReady()) {
+                        UIUtils.showErrorToast(MainActivity.this, "Mobile LN service is not connected yet");
                         return false;
                     }
                     fm.beginTransaction().replace(R.id.main_container, mReceiveFragment,
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_send:
                     if (!DEBUG && !isNodeReady()) {
+                        UIUtils.showErrorToast(MainActivity.this, "Mobile LN service is not connected yet");
                         return false;
                     }
                     fm.beginTransaction().replace(R.id.main_container, mSendFragment,

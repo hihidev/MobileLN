@@ -1,7 +1,9 @@
 package com.mobileln;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -10,6 +12,15 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        findViewById(R.id.settings_about_me).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(SettingsActivity.this,
+                        Uri.parse("https://github.com/hihidev/MobileLN"));
+            }
+        });
         findViewById(R.id.settings_bitcoind_log).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
