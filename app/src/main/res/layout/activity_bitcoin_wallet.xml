@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBg">
@@ -28,7 +27,7 @@
                                                          android:gravity="center"
                                                          android:layout_marginTop="30dp"
                                                          android:textStyle="bold"
-                                                         android:text="12345 BTC"
+                                                         android:text="----- BTC"
                                                          android:textSize="42sp"/>
             <LinearLayout android:layout_width="match_parent"
                           android:layout_height="wrap_content"
@@ -47,7 +46,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="xxx BTC"
+                    android:text="----- BTC"
                     android:textSize="18sp"/>
             </LinearLayout>
             <android.support.design.button.MaterialButton

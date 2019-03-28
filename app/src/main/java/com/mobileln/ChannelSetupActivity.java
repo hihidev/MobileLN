@@ -9,6 +9,7 @@ import android.support.design.card.MaterialCardView;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +35,8 @@ import com.mobileln.utils.UIUtils;
 public class ChannelSetupActivity extends AppCompatActivity {
 
     private static final String TAG = "ChannelSetupActivity";
-    private static final String TEST_NODE_ADDR = "0260d9119979caedc570ada883ff614c6efb93f7f7382e25d73ecbeba0b62df2d7@lnd.fun:9735";
+    private static final String TEST_NODE_ADDR =
+            "0260d9119979caedc570ada883ff614c6efb93f7f7382e25d73ecbeba0b62df2d7@lnd.fun:9735";
     private static final String TEST_NODE_DEFAULT_DEPOSIT = "50000";
 
     private ListView mListView;
@@ -55,8 +57,21 @@ public class ChannelSetupActivity extends AppCompatActivity {
         mCreateChannelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createChannelAsync(mCreateChannelPeerAddrTextView.getText().toString(),
-                        Long.valueOf(mCreateChannelAmountTextView.getText().toString()));
+                String addr = mCreateChannelPeerAddrTextView.getText().toString();
+                String amountStr = mCreateChannelAmountTextView.getText().toString();
+                if (TextUtils.isEmpty(addr)) {
+                    UIUtils.showErrorToast(ChannelSetupActivity.this, "Address cannot be empty");
+                    return;
+                }
+                long amount;
+                try {
+                    amount = Long.parseLong(amountStr);
+                } catch (Exception e) {
+                    UIUtils.showErrorToast(ChannelSetupActivity.this,
+                            "Amount needs to be a number");
+                    return;
+                }
+                createChannelAsync(addr, amount);
             }
         });
         mNoConnectedChannels = findViewById(R.id.create_channel_no_connected_channel);
@@ -179,6 +194,11 @@ public class ChannelSetupActivity extends AppCompatActivity {
 
     @MainThread
     private void closeChannelAsync(final String channelId, final boolean force) {
+        final AlertDialog closingDialog = new AlertDialog.Builder(this,
+                R.style.Theme_MaterialComponents_Light_Dialog_Alert)
+                .setTitle("Closing channel")
+                .setMessage("Please wait...").setCancelable(false).create();
+        closingDialog.show();
         new AsyncTask<Void, Void, Boolean>() {
 
             @Override
@@ -193,9 +213,11 @@ public class ChannelSetupActivity extends AppCompatActivity {
 
             @Override
             public void onPostExecute(Boolean result) {
+                closingDialog.dismiss();
                 if (result == null) {
                     return;
                 }
+                updateChannelsAsync();
                 new AlertDialog.Builder(ChannelSetupActivity.this)
                         .setTitle("Channel closed")
                         .setMessage("Channel successfully closed")

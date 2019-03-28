@@ -10,9 +10,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.annotation.MainThread;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -38,6 +42,8 @@ import com.mobileln.utils.UIUtils;
 
 public class BitcoinWalletActivity extends AppCompatActivity {
 
+    private static final String TAG = "BitcoinWalletActivity";
+
     private ImageView mQRImageView;
     private Button mReceiveBtcAddrBtn;
     private EditText mBtcWithdrawalAddrEditText;
@@ -48,6 +54,7 @@ public class BitcoinWalletActivity extends AppCompatActivity {
     private TextView mBtcUnconfirmedBalanceTextView;
     private View mBtcUnconfirmedBalanceLayout;
     private Button mGetTestCoinFromFaucetButton;
+    private volatile Thread mUpdateUiThread = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +86,26 @@ public class BitcoinWalletActivity extends AppCompatActivity {
         mBtcWithdrawalBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showWithdrawalConfirmationDialog(mBtcWithdrawalAddrEditText.getText().toString(),
-                        mBtcWithdrawalAmountEditText.getText().toString());
+                final String addr = mBtcWithdrawalAddrEditText.getText().toString();
+                final String amountStr = mBtcWithdrawalAmountEditText.getText().toString();
+                if (TextUtils.isEmpty(addr)) {
+                    UIUtils.showErrorToast(BitcoinWalletActivity.this, "Address cannot be empty");
+                    return;
+                }
+                boolean correctFormat = true;
+                if (!"all".equals(amountStr)) {
+                    try {
+                        Long.parseLong(amountStr);
+                    } catch (Exception e) {
+                        correctFormat = false;
+                    }
+                }
+                if (!correctFormat) {
+                    UIUtils.showErrorToast(BitcoinWalletActivity.this,
+                            "Amount needs to be a number or 'all'");
+                    return;
+                }
+                showWithdrawalConfirmationDialog(addr, amountStr);
             }
         });
         mBtcWithdrawalCameraImageView = findViewById(R.id.btc_withdrawal_camera_btn);
@@ -96,9 +121,7 @@ public class BitcoinWalletActivity extends AppCompatActivity {
                 integrator.initiateScan();
             }
         });
-
         updateWithdrawalInfoAsync();
-        updateWalletBalanceAsync();
     }
 
     @Override
@@ -113,6 +136,40 @@ public class BitcoinWalletActivity extends AppCompatActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Thread thread = new Thread() {
+            public void run() {
+                while (mUpdateUiThread == this) {
+                    try {
+                        final long unconfirmedBtcBalance = BitcoinCli.getUnconfirmedBalance(
+                                NodeService.getMinConfirmation());
+                        final long confirmedBalance =
+                                LightningCli.newInstance().getConfirmedBtcBalanceInWallet();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateWalletBalanceUI(confirmedBalance, unconfirmedBtcBalance);
+                            }
+                        });
+                    } catch (IOException | JSONException e) {
+                        UIUtils.showErrorToast(BitcoinWalletActivity.this, e.getMessage());
+                    }
+                    SystemClock.sleep(1000);
+                }
+            }
+        };
+        mUpdateUiThread = thread;
+        thread.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mUpdateUiThread = null;
     }
 
     private void updateWithdrawalInfoAsync() {
@@ -145,38 +202,16 @@ public class BitcoinWalletActivity extends AppCompatActivity {
         }.execute();
     }
 
-
-    private void updateWalletBalanceAsync() {
-        new AsyncTask<Void, Void, Pair<Long, Long>>() {
-
-            @Override
-            protected Pair<Long, Long> doInBackground(Void... voids) {
-                try {
-                    long unconfirmedBtcBalance = BitcoinCli.getUnconfirmedBalance(1);
-                    long confirmedBalance =
-                            LightningCli.newInstance().getConfirmedBtcBalanceInWallet();
-                    return Pair.create(unconfirmedBtcBalance, confirmedBalance);
-                } catch (IOException | JSONException e) {
-                    UIUtils.showErrorToast(BitcoinWalletActivity.this, e.getMessage());
-                    return null;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(Pair<Long, Long> result) {
-                if (result == null) {
-                    return;
-                }
-                if (result.first != 0) {
-                    mBtcUnconfirmedBalanceLayout.setVisibility(View.VISIBLE);
-                    mBtcUnconfirmedBalanceTextView.setText(
-                            (result.first > 0 ? "+" : "") + BtcSatUtils.sat2String(result.first));
-                } else {
-                    mBtcUnconfirmedBalanceLayout.setVisibility(View.GONE);
-                }
-                mBtcBalanceTextView.setText(BtcSatUtils.sat2String(result.second));
-            }
-        }.execute();
+    @MainThread
+    private void updateWalletBalanceUI(long confirmed, long unconfirmed) {
+        if (unconfirmed != 0) {
+            mBtcUnconfirmedBalanceLayout.setVisibility(View.VISIBLE);
+            mBtcUnconfirmedBalanceTextView.setText(
+                    (unconfirmed > 0 ? "+" : "") + BtcSatUtils.sat2String(unconfirmed));
+        } else {
+            mBtcUnconfirmedBalanceLayout.setVisibility(View.GONE);
+        }
+        mBtcBalanceTextView.setText(BtcSatUtils.sat2String(confirmed));
     }
 
     private void copyBtcAddressToClipBoard(String message) {
@@ -193,15 +228,12 @@ public class BitcoinWalletActivity extends AppCompatActivity {
         final long longAmount = withdrawAll ? 0 : Long.valueOf(amount);
         new AlertDialog.Builder(this)
                 .setTitle("BTC withdrawal")
-                .setMessage("Withdrawal address:\t" + address + "\n" + "Amount:\t" + (withdrawAll
-                        ? "all" : BtcSatUtils.sat2String(longAmount)) + "\n"
-                        + "Do you CONFIRM the withdrawal?\n(CANNOT BE UNDONE)")
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setMessage("Withdrawal address:\t" + address + "\n\n" + "Amount:\t" + (withdrawAll
+                        ? "all" : BtcSatUtils.sat2String(longAmount)) + "\n\n"
+                        + "CONFIRM this withdrawal?\n(CANNOT BE UNDONE)")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        Toast.makeText(BitcoinWalletActivity.this, "Yaay",
-                                Toast.LENGTH_SHORT).show();
                         new Thread() {
                             public void run() {
                                 try {
@@ -228,7 +260,6 @@ public class BitcoinWalletActivity extends AppCompatActivity {
                         .setMessage("txid:\t" + txid
                                 + "It may take 60+ minutes (6 confirmations) to show in your "
                                 + "withdrawal wallet")
-                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .setNeutralButton(android.R.string.ok, null)
                         .show();
             }
@@ -242,7 +273,6 @@ public class BitcoinWalletActivity extends AppCompatActivity {
                 new AlertDialog.Builder(BitcoinWalletActivity.this)
                         .setTitle("Withdrawal failed")
                         .setMessage("Error: " + errorMsg)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
                         .setNeutralButton(android.R.string.ok, null)
                         .show();
             }

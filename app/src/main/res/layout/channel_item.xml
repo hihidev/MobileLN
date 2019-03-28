@@ -19,7 +19,7 @@
                                                  android:layout_alignParentTop="true"
                                                  android:layout_toRightOf="@id/channel_state_color_cardview"
                                                  android:lines="1"
-                                                 android:text="XXXX"/>
+                                                 android:text=""/>
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="match_parent"
                   android:layout_alignParentBottom="true"
@@ -28,8 +28,8 @@
                   android:weightSum="2.0"
     >
         <TextView android:id="@+id/channel_my_bal" android:layout_width="match_parent"
-                  android:layout_height="match_parent" android:layout_weight="1.0" android:text="IN"/>
+                  android:layout_height="match_parent" android:layout_weight="1.0" android:text=""/>
         <TextView android:id="@+id/channel_opp_bal" android:layout_width="match_parent"
-                  android:layout_height="match_parent" android:layout_weight="1.0" android:text="OUT"/>
+                  android:layout_height="match_parent" android:layout_weight="1.0" android:text=""/>
     </LinearLayout>
 </RelativeLayout>

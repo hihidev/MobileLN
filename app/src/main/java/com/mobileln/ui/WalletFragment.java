@@ -371,7 +371,8 @@ public class WalletFragment extends Fragment {
                 try {
                     long channelBalance = LightningCli.newInstance().getConfirmedBalanceInChannels();
                     long btcBalance = LightningCli.newInstance().getConfirmedBtcBalanceInWallet();
-                    long unconfirmedBtcBalance = BitcoinCli.getUnconfirmedBalance(1);
+                    long unconfirmedBtcBalance = BitcoinCli.getUnconfirmedBalance(
+                            NodeService.getMinConfirmation());
                     return Pair.create(channelBalance, btcBalance + unconfirmedBtcBalance);
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(getActivity(), e.getMessage());

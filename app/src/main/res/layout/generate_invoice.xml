@@ -12,7 +12,7 @@
         android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
-            android:id="@+id/payment_amount_textivew"
+            android:id="@+id/gen_invoice_payment_amount_textivew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
-            android:id="@+id/payment_description_textivew"
+            android:id="@+id/gen_invoice_payment_description_textivew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/pay_description"/>

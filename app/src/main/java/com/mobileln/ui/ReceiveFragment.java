@@ -56,8 +56,8 @@ public class ReceiveFragment extends Fragment {
     private Button mGenerateInvoiceBtn;
     private TextView mNoInboundPaymentsTextview;
     private String mLabelPendingPayment = null;
-    private boolean mPaymentListenerRunning = false;
     private PaymentInfo[] mInboundPaymentList = null;
+    private volatile Thread mUpdateUiThread = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -122,19 +122,30 @@ public class ReceiveFragment extends Fragment {
     private void showGenerateInvoiceDialog() {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.generate_invoice, null);
-        final EditText amountEditText = dialogView.findViewById(R.id.payment_amount_textivew);
+        final EditText amountEditText = dialogView.findViewById(
+                R.id.gen_invoice_payment_amount_textivew);
         final EditText descriptionEditText = dialogView.findViewById(
-                R.id.payment_description_textivew);
+                R.id.gen_invoice_payment_description_textivew);
         new AlertDialog.Builder(getActivity(),
                 R.style.Theme_MaterialComponents_Light_Dialog_Alert).setTitle(
                 "New Invoice").setView(
                 dialogView).setPositiveButton(
-
                 android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        updateReceiveInfoAsync(Long.parseLong(amountEditText.getText().toString()),
-                                descriptionEditText.getText().toString());
+                        final long amount;
+                        try {
+                            amount = Long.parseLong(amountEditText.getText().toString());
+                        } catch (Exception e) {
+                            UIUtils.showErrorToast(getActivity(), "Amount cannot be empty");
+                            return;
+                        }
+                        final String description = descriptionEditText.getText().toString();
+                        if (TextUtils.isEmpty(description)) {
+                            UIUtils.showErrorToast(getActivity(), "Description cannot be empty");
+                            return;
+                        }
+                        updateReceiveInfoAsync(amount, description);
                     }
                 }).setNeutralButton(android.R.string.cancel, null).show();
     }
@@ -273,14 +284,9 @@ public class ReceiveFragment extends Fragment {
     }
 
     private void registerPaymentReceivedListener(final String label) {
-        // TODO: Race condition?
-        if (mPaymentListenerRunning) {
-            return;
-        }
-        mPaymentListenerRunning = true;
-        new Thread() {
+        final Thread thread = new Thread() {
             public void run() {
-                while (mPaymentListenerRunning) {
+                while (mUpdateUiThread == this) {
                     try {
                         final PaymentInfo paymentInfo = LightningCli.newInstance().getInvoiceInfo(
                                 label);
@@ -293,8 +299,10 @@ public class ReceiveFragment extends Fragment {
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    new AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog_Alert).setTitle(
-                                            "Payment received").setMessage(
+                                    new AlertDialog.Builder(activity,
+                                            R.style.Theme_MaterialComponents_Light_Dialog_Alert)
+                                            .setTitle(
+                                                    "Payment received").setMessage(
                                             "\nReceived:      \t" + BtcSatUtils.sat2String(
                                                     paymentInfo.satAmount) + "\n\nDescription:   \t"
                                                     + paymentInfo.description).setPositiveButton(
@@ -309,10 +317,12 @@ public class ReceiveFragment extends Fragment {
                     SystemClock.sleep(PAYMENT_LISTENER_INTERVAL_MS);
                 }
             }
-        }.start();
+        };
+        mUpdateUiThread = thread;
+        thread.start();
     }
 
     private void unregisterPaymentReceivedListener() {
-        mPaymentListenerRunning = false;
+        mUpdateUiThread = null;
     }
 }

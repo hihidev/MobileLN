@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.MainThread;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -53,7 +54,6 @@ public class SendFragment extends Fragment {
     private long mPayAmount;
     private String mPayDescription;
     private boolean mValidInvoice = false;
-    private AlertDialog mPayingDialog = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -116,10 +116,6 @@ public class SendFragment extends Fragment {
             }
         });
         updatePaymentSentAsync();
-        mPayingDialog = new AlertDialog.Builder(getActivity(), R.style.Theme_MaterialComponents_Light_Dialog_Alert)
-                .setTitle("Payment")
-                .setMessage("Sending payment, please wait...")
-                .setNegativeButton(android.R.string.no, null).create();
         return view;
     }
 
@@ -174,7 +170,8 @@ public class SendFragment extends Fragment {
         }.execute();
     }
 
-    private void showConfirmPaymentDialog(final String invoice, final String label, long amount) {
+    private void showConfirmPaymentDialog(final String invoice, final String label,
+            final long amount) {
         new AlertDialog.Builder(getActivity(), R.style.Theme_MaterialComponents_Light_Dialog_Alert)
                 .setTitle("Confirm Payment?")
                 .setMessage("\nAmount:        \t" + BtcSatUtils.sat2String(amount)
@@ -182,23 +179,59 @@ public class SendFragment extends Fragment {
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        // Toast.makeText(getContext(), "Yaay", Toast.LENGTH_SHORT).show();
                         mInvoiceTextView.setText("");
-                        mPayingDialog.show();
-                        new Thread() {
-                            public void run() {
-                                try {
-                                    showPaymentSuccessResult(
-                                            LightningCli.newInstance().payInvoice(invoice, label));
-                                } catch (IOException | JSONException e) {
-                                    showPaymentFailedResult(e.getMessage());
-                                }
-                                updatePaymentSentAsync();
-                            }
-                        }.start();
+                        payInvoice(invoice, label, amount);
                     }
                 })
                 .setNegativeButton(android.R.string.no, null).show();
+    }
+
+    @MainThread
+    private void payInvoice(final String invoice, final String payDescription, final long amount) {
+        final AlertDialog dialog = new AlertDialog.Builder(getActivity(),
+                R.style.Theme_MaterialComponents_Light_Dialog_Alert)
+                .setTitle("Payment")
+                .setMessage("Sending payment, please wait...").setCancelable(false).create();
+        dialog.show();
+        new AsyncTask<Void, Void, String>() {
+
+            @Override
+            protected String doInBackground(Void... voids) {
+                try {
+                    LightningCli.newInstance().payInvoice(invoice, payDescription);
+                    return null;
+                } catch (IOException | JSONException e) {
+                    return e.getMessage();
+                }
+            }
+
+            @Override
+            public void onPostExecute(String errorMsg) {
+                dialog.dismiss();
+                Activity activity = getActivity();
+                if (activity == null) {
+                    return;
+                }
+                if (errorMsg == null) {
+                    new AlertDialog.Builder(activity,
+                            R.style.Theme_MaterialComponents_Light_Dialog_Alert)
+                            .setTitle("Payment sent")
+                            .setMessage("\nSent:          \t" + BtcSatUtils.sat2String(amount)
+                                    + "\n\nDescription:   \t"
+                                    + payDescription).setPositiveButton(
+                            android.R.string.ok, null)
+                            .show();
+                    clearPaymentDetails();
+                } else {
+                    new AlertDialog.Builder(activity,
+                            R.style.Theme_MaterialComponents_Light_Dialog_Alert)
+                            .setTitle("Payment failed")
+                            .setMessage("Error: " + errorMsg)
+                            .setNeutralButton(android.R.string.ok, null)
+                            .show();
+                }
+            }
+        }.execute();
     }
 
     private void updatePaymentSentAsync() {
@@ -263,48 +296,10 @@ public class SendFragment extends Fragment {
         }.execute();
     }
 
-    private void showPaymentSuccessResult(final PaymentInfo paymentInfo) {
-        final Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mPayingDialog.dismiss();
-                new AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog_Alert)
-                        .setTitle("Payment sent")
-                        .setMessage("\nSent:          \t" + BtcSatUtils.sat2String(paymentInfo.satAmount) + "\n\nDescription:   \t"
-                                + paymentInfo.description).setPositiveButton(
-                        android.R.string.ok, null)
-                        .show();
-                clearPaymentDetails();
-            }
-        });
-    }
-
     private void clearPaymentDetails() {
         mAmountTextView.setText("------");
         mDescriptionTextView.setText("------");
         mValidInvoice = false;
         mPayNowBtn.setEnabled(false);
-    }
-
-    private void showPaymentFailedResult(final String errorMsg) {
-        final Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mPayingDialog.dismiss();
-                new AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog_Alert)
-                        .setTitle("Payment failed")
-                        .setMessage("Error: " + errorMsg)
-                        .setNeutralButton(android.R.string.ok, null)
-                        .show();
-            }
-        });
     }
 }
