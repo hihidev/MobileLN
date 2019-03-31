@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.mobileln.bitcoind.BitcoindConfig;
-import com.mobileln.lightningd.LightningdConfig;
+import com.mobileln.lightningd.clightning.CLightningdConfig;
 
 public class CustomConfigActivity extends AppCompatActivity {
 
@@ -59,7 +59,7 @@ public class CustomConfigActivity extends AppCompatActivity {
         try {
             final Map<String, String> map;
             if (mType.equals("lightningd")) {
-                map = LightningdConfig.readConfig(this);
+                map = CLightningdConfig.readConfig(this);
             } else if (mType.equals("bitcoind")) {
                 map = BitcoindConfig.readConfig(this);
             } else {
@@ -88,7 +88,7 @@ public class CustomConfigActivity extends AppCompatActivity {
             }
 
             if (mType.equals("lightningd")) {
-                LightningdConfig.saveConfig(this, map);
+                CLightningdConfig.saveConfig(this, map);
             } else if (mType.equals("bitcoind")) {
                 BitcoindConfig.saveConfig(this, map);
             } else {

@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import com.mobileln.R;
-import com.mobileln.lightningd.LightningCli;
+import com.mobileln.lightningd.LightningClient;
 import com.mobileln.lightningd.PaymentInfo;
 import com.mobileln.utils.BtcSatUtils;
 import com.mobileln.utils.QRUtils;
@@ -156,7 +155,7 @@ public class ReceiveFragment extends Fragment {
             @Override
             protected String doInBackground(Void... voids) {
                 try {
-                    return LightningCli.newInstance().generateInvoice(amount,
+                    return LightningClient.newInstance().generateInvoice(amount,
                             description);
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(getActivity(), e.getMessage());
@@ -204,7 +203,7 @@ public class ReceiveFragment extends Fragment {
             @Override
             protected PaymentInfo[] doInBackground(Void... voids) {
                 try {
-                    return LightningCli.newInstance().getPaymentReceived();
+                    return LightningClient.newInstance().getPaymentReceived();
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(getActivity(), e.getMessage());
                 }
@@ -288,7 +287,7 @@ public class ReceiveFragment extends Fragment {
             public void run() {
                 while (mUpdateUiThread == this) {
                     try {
-                        final PaymentInfo paymentInfo = LightningCli.newInstance().getInvoiceInfo(
+                        final PaymentInfo paymentInfo = LightningClient.newInstance().getInvoiceInfo(
                                 label);
                         if (paymentInfo != null && paymentInfo.completed) {
                             unregisterPaymentReceivedListener();

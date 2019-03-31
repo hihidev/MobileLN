@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.mobileln.bitcoind.Bitcoind;
-import com.mobileln.lightningd.Lightningd;
+import com.mobileln.lightningd.clightning.CLightningd;
 import com.mobileln.utils.ProcessHelper;
 
 public class DebugLogActivity extends AppCompatActivity {
@@ -30,7 +30,7 @@ public class DebugLogActivity extends AppCompatActivity {
         if ("bitcoind".equals(type)) {
             mProcessHelper = Bitcoind.getInstance();
         } else if ("lightningd".equals(type)) {
-            mProcessHelper = Lightningd.getInstance();
+            mProcessHelper = CLightningd.getInstance();
         } else {
             Log.e(TAG, "unknown type: " + type);
             finish();

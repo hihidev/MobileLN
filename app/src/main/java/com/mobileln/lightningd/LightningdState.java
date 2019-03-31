@@ -37,7 +37,7 @@ public class LightningdState extends ProgramMonitor {
         public void run() {
             Context context = MyApplication.getContext();
             try {
-                mBlockHeight = LightningCli.newInstance().getBlockHeight(context);
+                mBlockHeight = LightningClient.newInstance().getBlockHeight(context);
             } catch (IOException | JSONException e) { }
             if (mBlockHeight > 0) {
                 mCurrentState = STATE_READY;

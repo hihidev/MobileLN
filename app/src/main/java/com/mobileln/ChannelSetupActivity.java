@@ -1,7 +1,6 @@
 package com.mobileln;
 
 import android.content.DialogInterface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.MainThread;
@@ -29,7 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.mobileln.lightningd.ChannelInfo;
-import com.mobileln.lightningd.LightningCli;
+import com.mobileln.lightningd.LightningClient;
 import com.mobileln.utils.UIUtils;
 
 public class ChannelSetupActivity extends AppCompatActivity {
@@ -204,7 +203,7 @@ public class ChannelSetupActivity extends AppCompatActivity {
             @Override
             protected Boolean doInBackground(Void... voids) {
                 try {
-                    return LightningCli.newInstance().closeChannel(channelId, force);
+                    return LightningClient.newInstance().closeChannel(channelId, force);
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(ChannelSetupActivity.this, e.getMessage());
                     return null;
@@ -240,8 +239,8 @@ public class ChannelSetupActivity extends AppCompatActivity {
             @Override
             protected Boolean doInBackground(Void... voids) {
                 try {
-                    String peerId = LightningCli.newInstance().connectPeer(peerAddr);
-                    return LightningCli.newInstance().fundChannel(peerId, amount);
+                    String peerId = LightningClient.newInstance().connectPeer(peerAddr);
+                    return LightningClient.newInstance().fundChannel(peerId, amount);
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(ChannelSetupActivity.this, e.getMessage());
                     return null;
@@ -275,7 +274,7 @@ public class ChannelSetupActivity extends AppCompatActivity {
             @Override
             protected ChannelInfo[] doInBackground(Void... voids) {
                 try {
-                    return LightningCli.newInstance().getChannelList();
+                    return LightningClient.newInstance().getChannelList();
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(ChannelSetupActivity.this, e.getMessage());
                     return null;

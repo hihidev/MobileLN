@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.mobileln.lightningd.LightningCli;
+import com.mobileln.lightningd.LightningClient;
 import com.mobileln.utils.CircularArray;
 
 public class DebugConsoleActivity extends AppCompatActivity {
@@ -51,7 +51,7 @@ public class DebugConsoleActivity extends AppCompatActivity {
 
             @Override
             protected String doInBackground(Void... voids) {
-                return LightningCli.newInstance(true).rawQuery(DebugConsoleActivity.this, arguments);
+                return LightningClient.newInstance(true).rawQuery(DebugConsoleActivity.this, arguments);
             }
             @Override
             public void onPostExecute(String str) {

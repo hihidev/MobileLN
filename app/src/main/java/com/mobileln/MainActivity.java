@@ -1,38 +1,21 @@
 package com.mobileln;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.IOException;
-import java.util.Map;
 
-import com.mobileln.bitcoind.BitcoindConfig;
-import com.mobileln.bitcoind.BitcoindState;
-import com.mobileln.lightningd.LightningCli;
-import com.mobileln.lightningd.LightningdConfig;
+import com.mobileln.lightningd.LightningClient;
 import com.mobileln.ui.ReceiveFragment;
 import com.mobileln.ui.SendFragment;
 import com.mobileln.ui.WalletFragment;
 import com.mobileln.utils.ExtractResourceUtils;
-import com.mobileln.utils.FastSyncUtils;
 import com.mobileln.utils.UIUtils;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             final FragmentManager fm = getSupportFragmentManager();
-            final long inCap = LightningCli.getCachedInboundCapacity();
-            final long outCap = LightningCli.getCachedOutboundCapacity();
+            final long inCap = LightningClient.newInstance().getCachedInboundCapacity();
+            final long outCap = LightningClient.newInstance().getCachedOutboundCapacity();
             switch (item.getItemId()) {
                 case R.id.navigation_receive:
                     if (!DEBUG && !isNodeReady()) {

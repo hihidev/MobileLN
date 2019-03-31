@@ -1,4 +1,4 @@
-package com.mobileln.lightningd;
+package com.mobileln.lightningd.clightning;
 
 import android.content.Context;
 import android.support.annotation.WorkerThread;
@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.mobileln.MyApplication;
+import com.mobileln.lightningd.ChannelInfo;
+import com.mobileln.lightningd.LightningClientInterface;
+import com.mobileln.lightningd.PaymentInfo;
 import com.mobileln.utils.FileUtils;
 import com.mobileln.utils.ProcessHelper;
 
@@ -19,23 +22,15 @@ import com.mobileln.utils.ProcessHelper;
 // which might case JSONException while it should be handled gracefully
 // TODO: Should have some automate test to sure commands are still working correctly even
 // lightning-cli is updated
-public class LightningCli extends ProcessHelper {
+public class CLightningClient extends ProcessHelper implements LightningClientInterface {
     private static final String TAG = "Lightning-cli";
     private static volatile long sCachedInboundCapacity = -1;
     private static volatile long sCachedOutboundCapacity = -1;
     private static volatile long sCachedInChannelBalance = -1;
     private static volatile long sCachedOnChainBalance = -1;
 
-    private LightningCli(boolean redirectError) {
+    public CLightningClient(boolean redirectError) {
         super(redirectError);
-    }
-
-    public static LightningCli newInstance() {
-        return newInstance(false);
-    }
-
-    public static LightningCli newInstance(boolean redirectError) {
-        return new LightningCli(redirectError);
     }
 
     @WorkerThread
@@ -146,15 +141,15 @@ public class LightningCli extends ProcessHelper {
         return result;
     }
 
-    public static long getCachedOnChainBalance() {
+    public long getCachedOnChainBalance() {
         return sCachedOnChainBalance;
     }
 
-    public static long getCachedInboundCapacity() {
+    public long getCachedInboundCapacity() {
         return sCachedInboundCapacity;
     }
 
-    public static long getCachedOutboundCapacity() {
+    public long getCachedOutboundCapacity() {
         return sCachedOutboundCapacity;
     }
 
@@ -181,7 +176,7 @@ public class LightningCli extends ProcessHelper {
         return result;
     }
 
-    public static long getCachedInChannelBalance() {
+    public long getCachedInChannelBalance() {
         return sCachedInChannelBalance;
     }
 

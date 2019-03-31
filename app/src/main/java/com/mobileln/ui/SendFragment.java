@@ -33,7 +33,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import com.mobileln.R;
-import com.mobileln.lightningd.LightningCli;
+import com.mobileln.lightningd.LightningClient;
 import com.mobileln.lightningd.PaymentInfo;
 import com.mobileln.utils.BtcSatUtils;
 import com.mobileln.utils.UIUtils;
@@ -139,7 +139,7 @@ public class SendFragment extends Fragment {
             @Override
             protected PaymentInfo doInBackground(Void... voids) {
                 try {
-                    return LightningCli.newInstance().getDecodedInvoice(invoice);
+                    return LightningClient.newInstance().getDecodedInvoice(invoice);
                 } catch (IOException | JSONException e) {
                     return null;
                 }
@@ -198,7 +198,7 @@ public class SendFragment extends Fragment {
             @Override
             protected String doInBackground(Void... voids) {
                 try {
-                    LightningCli.newInstance().payInvoice(invoice, payDescription);
+                    LightningClient.newInstance().payInvoice(invoice, payDescription);
                     return null;
                 } catch (IOException | JSONException e) {
                     return e.getMessage();
@@ -241,7 +241,7 @@ public class SendFragment extends Fragment {
             @Override
             protected PaymentInfo[] doInBackground(Void... voids) {
                 try {
-                    return LightningCli.newInstance().getPaymentSent();
+                    return LightningClient.newInstance().getPaymentSent();
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(getActivity(), e.getMessage());
                     return null;

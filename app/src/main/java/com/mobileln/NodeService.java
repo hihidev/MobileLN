@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import com.mobileln.bitcoind.BitcoinCli;
 import com.mobileln.bitcoind.Bitcoind;
 import com.mobileln.bitcoind.BitcoindState;
-import com.mobileln.lightningd.LightningCli;
+import com.mobileln.lightningd.LightningClient;
 import com.mobileln.lightningd.Lightningd;
 import com.mobileln.lightningd.LightningdState;
 import com.mobileln.utils.FastSyncUtils;
@@ -149,7 +149,7 @@ public class NodeService extends Service {
                     }
                     if (sRunning) {
                         setCurrentState(NodeState.STARTING_LIGHTNINGD, false);
-                        Lightningd.getInstance().startService(getApplicationContext());
+                        Lightningd.startService(getApplicationContext());
                     }
                     if (!sRunning) {
                         return;
@@ -163,7 +163,7 @@ public class NodeService extends Service {
                     if (!sRunning) {
                         return;
                     }
-                    LightningCli.newInstance().updateCachedInOutboundCapacity();
+                    LightningClient.newInstance().updateCachedInOutboundCapacity();
                     // TODO: No hard code
                     // Only cache top 1000 watch-only index to monitor unconfirmed balance
                     // 640K ram should be enough
@@ -175,7 +175,7 @@ public class NodeService extends Service {
                         boolean done = false;
                         while (!done) {
                             try {
-                                String[] addresses = LightningCli.newInstance().getListAddrs(
+                                String[] addresses = LightningClient.newInstance().getListAddrs(
                                         MAX_WATCH_ONLY_INDEX);
                                 for (String address : addresses) {
                                     BitcoinCli.addWatchOnlyAddress(address);
@@ -225,7 +225,7 @@ public class NodeService extends Service {
 
     private void stopForegroundService() {
         sRunning = false;
-        Lightningd.getInstance().stopService(getApplicationContext());
+        Lightningd.stopService(getApplicationContext());
         Bitcoind.getInstance().stopService(getApplicationContext());
         stopForeground(true);
         setCurrentState(NodeState.DISCONNECTING, false);

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,8 +15,6 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -35,7 +32,7 @@ import org.json.JSONException;
 import java.io.IOException;
 
 import com.mobileln.bitcoind.BitcoinCli;
-import com.mobileln.lightningd.LightningCli;
+import com.mobileln.lightningd.LightningClient;
 import com.mobileln.utils.BtcSatUtils;
 import com.mobileln.utils.QRUtils;
 import com.mobileln.utils.UIUtils;
@@ -148,7 +145,7 @@ public class BitcoinWalletActivity extends AppCompatActivity {
                         final long unconfirmedBtcBalance = BitcoinCli.getUnconfirmedBalance(
                                 NodeService.getMinConfirmation());
                         final long confirmedBalance =
-                                LightningCli.newInstance().getConfirmedBtcBalanceInWallet();
+                                LightningClient.newInstance().getConfirmedBtcBalanceInWallet();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -178,7 +175,7 @@ public class BitcoinWalletActivity extends AppCompatActivity {
             @Override
             protected String doInBackground(Void... voids) {
                 try {
-                    String[] addresses = LightningCli.newInstance().getMyBech32Addresses();
+                    String[] addresses = LightningClient.newInstance().getMyBech32Addresses();
                     return addresses[addresses.length - 1];
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(BitcoinWalletActivity.this, e.getMessage());
@@ -238,7 +235,7 @@ public class BitcoinWalletActivity extends AppCompatActivity {
                             public void run() {
                                 try {
                                     showWithdrawalSuccessResult(
-                                            LightningCli.newInstance().withdrawBtc(address,
+                                            LightningClient.newInstance().withdrawBtc(address,
                                                     longAmount, withdrawAll));
                                 } catch (IOException | JSONException e) {
                                     showWithdrawalFailedResult(e.getMessage());

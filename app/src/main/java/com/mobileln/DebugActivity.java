@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.mobileln.bitcoind.BitcoindConfig;
-import com.mobileln.lightningd.LightningdConfig;
+import com.mobileln.lightningd.clightning.CLightningdConfig;
 //import com.mobileln.utils.ExtractResourceUtils;
 import com.mobileln.utils.ExtractResourceUtils;
 import com.mobileln.utils.FastSyncUtils;
@@ -63,7 +63,7 @@ public class DebugActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         try {
-                            mLightningdConfig = LightningdConfig.readConfig(DebugActivity.this);
+                            mLightningdConfig = CLightningdConfig.readConfig(DebugActivity.this);
                             Log.i(TAG, mLightningdConfig.toString());
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -74,7 +74,7 @@ public class DebugActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mLightningdConfig = LightningdConfig.readDefaultConfig();
+                        mLightningdConfig = CLightningdConfig.readDefaultConfig();
                         Log.i(TAG, mLightningdConfig.toString());
                     }
                 });
@@ -83,7 +83,7 @@ public class DebugActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         try {
-                            LightningdConfig.saveConfig(DebugActivity.this, mLightningdConfig);
+                            CLightningdConfig.saveConfig(DebugActivity.this, mLightningdConfig);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
