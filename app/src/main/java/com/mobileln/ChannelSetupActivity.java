@@ -146,9 +146,8 @@ public class ChannelSetupActivity extends AppCompatActivity {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.channelName.setText("[" + channelInfo.state + "]" + channelInfo.name);
-            viewHolder.channelColor.setCardBackgroundColor(
-                    channelInfo.state.equals(ChannelInfo.State.CHANNELD_NORMAL) ? 0xFF00FF00
+            viewHolder.channelName.setText(channelInfo.name);
+            viewHolder.channelColor.setCardBackgroundColor(channelInfo.active ? 0xFF00FF00
                             : 0xFFFFFF00);
             viewHolder.myBal.setText("Outbound cap:" + channelInfo.myBal);
             viewHolder.oppBal.setText("Inbound cap:" + channelInfo.oppBal);

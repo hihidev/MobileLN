@@ -63,7 +63,9 @@ public class Bitcoind extends ProcessHelper {
                 "-datadir=" + dataDir,
                 "-rpcuser=" + mRpcUserName,
                 "-rpcpassword=" + mRpcPassowrd,
-                "-rpcport=" + RPC_PORT
+                "-rpcport=" + RPC_PORT,
+                "-zmqpubrawblock=tcp://127.0.0.1:28332",
+                "-zmqpubrawtx=tcp://127.0.0.1:28333"
         );
         startProcess(context, TAG);
         BitcoindState.getInstance().startMonitor();

@@ -23,10 +23,13 @@ public interface LightningClientInterface {
     String[] getMyBech32Addresses() throws IOException, JSONException;
 
     @WorkerThread
-    long getConfirmedBtcBalanceInWallet() throws IOException, JSONException;
+    String getMyBech32Address() throws IOException, JSONException;
 
     @WorkerThread
-    long getConfirmedBalanceInChannels() throws IOException, JSONException;
+    long getConfirmedOnChainBalance() throws IOException, JSONException;
+
+    @WorkerThread
+    long getBalanceInChannels() throws IOException, JSONException;
 
     long getCachedOnChainBalance();
 
@@ -75,4 +78,8 @@ public interface LightningClientInterface {
 
     @WorkerThread
     String[] getListAddrs(int maxIndex) throws IOException, JSONException;
+
+    long getCachedUnconfirmedOnChainBalance();
+
+    long getUnconfirmedOnChainBalance(int minConfirmation) throws JSONException, IOException;
 }

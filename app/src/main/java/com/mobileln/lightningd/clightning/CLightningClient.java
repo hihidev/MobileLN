@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.mobileln.MyApplication;
+import com.mobileln.bitcoind.BitcoinCli;
 import com.mobileln.lightningd.ChannelInfo;
 import com.mobileln.lightningd.LightningClientInterface;
 import com.mobileln.lightningd.PaymentInfo;
@@ -28,6 +29,7 @@ public class CLightningClient extends ProcessHelper implements LightningClientIn
     private static volatile long sCachedOutboundCapacity = -1;
     private static volatile long sCachedInChannelBalance = -1;
     private static volatile long sCachedOnChainBalance = -1;
+    private static volatile long sCachedUnconfirmedOnChainBalance = -1;
 
     public CLightningClient(boolean redirectError) {
         super(redirectError);
@@ -126,7 +128,16 @@ public class CLightningClient extends ProcessHelper implements LightningClientIn
     }
 
     @WorkerThread
-    public long getConfirmedBtcBalanceInWallet() throws JSONException, IOException {
+    public String getMyBech32Address() throws IOException, JSONException {
+        String[] addresses = getMyBech32Addresses();
+        if (addresses == null || addresses.length == 0) {
+            return null;
+        }
+        return addresses[addresses.length -1];
+    }
+
+    @WorkerThread
+    public long getConfirmedOnChainBalance() throws JSONException, IOException {
         JSONObject json = getJSONResponse(MyApplication.getContext(), new String[]{"listfunds"});
         JSONArray jsonArray = json.getJSONArray("outputs");
         int len = jsonArray.length();
@@ -139,6 +150,17 @@ public class CLightningClient extends ProcessHelper implements LightningClientIn
         }
         sCachedOnChainBalance = result;
         return result;
+    }
+
+    @WorkerThread
+    public long getUnconfirmedOnChainBalance(int minConfirmation) throws JSONException, IOException {
+        long balance = BitcoinCli.getUnconfirmedBalance(minConfirmation);
+        sCachedUnconfirmedOnChainBalance = balance;
+        return balance;
+    }
+
+    public long getCachedUnconfirmedOnChainBalance() {
+        return sCachedUnconfirmedOnChainBalance;
     }
 
     public long getCachedOnChainBalance() {
@@ -154,7 +176,7 @@ public class CLightningClient extends ProcessHelper implements LightningClientIn
     }
 
     @WorkerThread
-    public long getConfirmedBalanceInChannels() throws IOException, JSONException {
+    public long getBalanceInChannels() throws IOException, JSONException {
         JSONObject json = getJSONResponse(MyApplication.getContext(), new String[]{"listpeers"});
         long result = 0;
         JSONArray peers = json.getJSONArray("peers");
@@ -310,14 +332,15 @@ public class CLightningClient extends ProcessHelper implements LightningClientIn
             for (int j = 0; j < channelsLen; j++) {
                 JSONObject channel = channels.getJSONObject(j);
                 String channelId = channel.getString("channel_id");
-                String state = channel.getString("state");
-                String name = channel.optString("owner");
+                boolean closed = (channel.getString("state") == ChannelInfo.State.CLOSINGD_COMPLETE);
+                boolean active = (channel.getString("state") == ChannelInfo.State.CHANNELD_NORMAL);
+                String name = "[" + channel.getString("state") + "]" + channel.optString("owner");
                 long channelTotalSat = channel.getLong("msatoshi_total") / 1000;
                 long outCapacitySat = channel.getLong("msatoshi_to_us") / 1000;
                 long inCapacitySat = channelTotalSat - outCapacitySat;
                 inboundCap += inCapacitySat;
                 outboundCap += outCapacitySat;
-                result.add(new ChannelInfo(channelId, state, name, channelTotalSat, inCapacitySat,
+                result.add(new ChannelInfo(channelId, closed, active, name, channelTotalSat, inCapacitySat,
                         outCapacitySat));
             }
         }

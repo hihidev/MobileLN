@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.mobileln.bitcoind.Bitcoind;
 import com.mobileln.lightningd.clightning.CLightningd;
+import com.mobileln.lightningd.lnd.Lnd;
 import com.mobileln.utils.ProcessHelper;
 
 public class DebugLogActivity extends AppCompatActivity {
@@ -29,8 +30,10 @@ public class DebugLogActivity extends AppCompatActivity {
         String type = intent.getStringExtra("type");
         if ("bitcoind".equals(type)) {
             mProcessHelper = Bitcoind.getInstance();
-        } else if ("lightningd".equals(type)) {
+        } else if ("clightningd".equals(type)) {
             mProcessHelper = CLightningd.getInstance();
+        } else if ("lnd".equals(type)) {
+            mProcessHelper = Lnd.getInstance();
         } else {
             Log.e(TAG, "unknown type: " + type);
             finish();

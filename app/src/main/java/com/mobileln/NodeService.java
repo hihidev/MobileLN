@@ -10,9 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.mobileln.bitcoind.BitcoinCli;
@@ -23,6 +25,8 @@ import com.mobileln.lightningd.Lightningd;
 import com.mobileln.lightningd.LightningdState;
 import com.mobileln.utils.FastSyncUtils;
 import com.mobileln.utils.WalletStateSharedPrefs;
+
+import org.json.JSONException;
 
 public class NodeService extends Service {
 
@@ -163,33 +167,49 @@ public class NodeService extends Service {
                     if (!sRunning) {
                         return;
                     }
-                    LightningClient.newInstance().updateCachedInOutboundCapacity();
-                    // TODO: No hard code
-                    // Only cache top 1000 watch-only index to monitor unconfirmed balance
-                    // 640K ram should be enough
-                    final int MAX_WATCH_ONLY_INDEX = 1000;
-                    final WalletStateSharedPrefs prefs = new WalletStateSharedPrefs(
-                            getApplicationContext());
-                    int maxIndex = prefs.getWatchOnlyMaxIndex();
-                    if (maxIndex < MAX_WATCH_ONLY_INDEX) {
-                        boolean done = false;
-                        while (!done) {
-                            try {
-                                String[] addresses = LightningClient.newInstance().getListAddrs(
-                                        MAX_WATCH_ONLY_INDEX);
-                                for (String address : addresses) {
-                                    BitcoinCli.addWatchOnlyAddress(address);
+                    while (sRunning) {
+                        try {
+                            LightningClient.newInstance().updateCachedInOutboundCapacity();
+                            break;
+                        } catch (IOException | JSONException e) {
+                        }
+                        SystemClock.sleep(1000);
+                    }
+                    if (!LightningClient.useLnd()) {
+                        // TODO: No hard code
+                        // Only cache top 1000 watch-only index to monitor unconfirmed balance
+                        // 640K ram should be enough
+                        final int MAX_WATCH_ONLY_INDEX = 1000;
+                        final WalletStateSharedPrefs prefs = new WalletStateSharedPrefs(
+                                getApplicationContext());
+                        int maxIndex = prefs.getWatchOnlyMaxIndex();
+                        if (maxIndex < MAX_WATCH_ONLY_INDEX) {
+                            boolean done = false;
+                            while (!done) {
+                                try {
+                                    String[] addresses = LightningClient.newInstance().getListAddrs(
+                                            MAX_WATCH_ONLY_INDEX);
+                                    for (String address : addresses) {
+                                        BitcoinCli.addWatchOnlyAddress(address);
+                                    }
+                                    prefs.saveWatchOnlyMaxIndex(MAX_WATCH_ONLY_INDEX);
+                                    done = true;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    Thread.sleep(1000);
                                 }
-                                prefs.saveWatchOnlyMaxIndex(MAX_WATCH_ONLY_INDEX);
-                                done = true;
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Thread.sleep(1000);
                             }
                         }
                     }
 
                     setCurrentState(NodeState.ALL_READY, false);
+                    while (sRunning) {
+                        if (!Lightningd.isRunning() && Lightningd.fullyStopped()) {
+                            Log.i(TAG, "Lightningd is dead! Restarting Lightningd");
+                            Lightningd.startService(getApplicationContext());
+                        }
+                        SystemClock.sleep(10 * 1000);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     stopForegroundService();

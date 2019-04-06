@@ -19,6 +19,7 @@ import java.util.Properties;
 
 import com.mobileln.bitcoind.BitcoindConfig;
 import com.mobileln.lightningd.clightning.CLightningdConfig;
+import com.mobileln.lightningd.lnd.LndConfig;
 
 public class CustomConfigActivity extends AppCompatActivity {
 
@@ -43,7 +44,9 @@ public class CustomConfigActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String type = intent.getStringExtra("type");
-        if ("lightningd".equals(type)) {
+        if ("clightningd".equals(type)) {
+            mType = type;
+        } else if ("lnd".equals(type)) {
             mType = type;
         } else if ("bitcoind".equals(type)) {
             mType = type;
@@ -58,8 +61,10 @@ public class CustomConfigActivity extends AppCompatActivity {
     private void loadConfig() {
         try {
             final Map<String, String> map;
-            if (mType.equals("lightningd")) {
+            if (mType.equals("clightningd")) {
                 map = CLightningdConfig.readConfig(this);
+            } else if (mType.equals("lnd")) {
+                map = LndConfig.readConfig(this);
             } else if (mType.equals("bitcoind")) {
                 map = BitcoindConfig.readConfig(this);
             } else {
@@ -89,7 +94,9 @@ public class CustomConfigActivity extends AppCompatActivity {
 
             if (mType.equals("lightningd")) {
                 CLightningdConfig.saveConfig(this, map);
-            } else if (mType.equals("bitcoind")) {
+            } else if (mType.equals("lnd")) {
+                LndConfig.saveConfig(this, map);
+            }else if (mType.equals("bitcoind")) {
                 BitcoindConfig.saveConfig(this, map);
             } else {
                 Log.i(TAG, "WTF? unknown type: " + mType);

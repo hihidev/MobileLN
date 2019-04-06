@@ -134,6 +134,10 @@ public class ProcessHelper {
         return mRunningThread != null;
     }
 
+    public synchronized boolean fullyStopped() {
+        return mLogStringDone.getCount() == 0;
+    }
+
     protected synchronized void waitFor() throws InterruptedException {
         if (mLogStringDone != null && mLogStringBuffer != null) {
             mLogStringDone.await();

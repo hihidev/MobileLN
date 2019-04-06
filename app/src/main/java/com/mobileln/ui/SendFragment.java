@@ -123,10 +123,14 @@ public class SendFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
-            if (result.getContents() == null) {
+            String contents = result.getContents();
+            if (contents == null) {
                 Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-                mInvoiceTextView.setText(result.getContents());
+                if (contents.startsWith("lightning:")) {
+                    contents.substring("lightning:".length());
+                }
+                mInvoiceTextView.setText(contents);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -141,6 +145,7 @@ public class SendFragment extends Fragment {
                 try {
                     return LightningClient.newInstance().getDecodedInvoice(invoice);
                 } catch (IOException | JSONException e) {
+                    e.printStackTrace();
                     return null;
                 }
             }

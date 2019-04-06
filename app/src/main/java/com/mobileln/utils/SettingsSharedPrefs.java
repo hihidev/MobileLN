@@ -16,8 +16,8 @@ public class SettingsSharedPrefs {
     }
 
     public boolean isBackendLnd() {
-        return mSharedPreferences.getString(LIGHTNINGD_BACKEND, LIGHTNINGD_BACKEND_LND).equals(
-                LIGHTNINGD_BACKEND_CLIGHTNING);
+        return mSharedPreferences.getString(LIGHTNINGD_BACKEND, LIGHTNINGD_BACKEND_CLIGHTNING).equals(
+                LIGHTNINGD_BACKEND_LND);
     }
 
     public void setBackendIsLnd(boolean isLnd) {

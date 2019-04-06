@@ -7,6 +7,8 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.mobileln.lightningd.LightningClient;
+
 public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +35,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SettingsActivity.this, DebugLogActivity.class);
-                intent.putExtra("type", "lightningd");
+                String type = LightningClient.useLnd() ? "lnd" : "clightningd";
+                intent.putExtra("type", type);
                 startActivity(intent);
             }
         });
@@ -41,7 +44,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SettingsActivity.this, DebugConsoleActivity.class);
-                intent.putExtra("type", "lightning-cli");
+                String type = LightningClient.useLnd() ? "lncli" : "lightning-cli";
+                intent.putExtra("type", type);
                 startActivity(intent);
             }
         });
@@ -57,7 +61,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SettingsActivity.this, CustomConfigActivity.class);
-                intent.putExtra("type", "lightningd");
+                String type = LightningClient.useLnd() ? "lnd" : "clightningd";
+                intent.putExtra("type", type);
                 startActivity(intent);
             }
         });

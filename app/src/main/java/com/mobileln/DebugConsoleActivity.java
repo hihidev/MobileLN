@@ -30,6 +30,8 @@ public class DebugConsoleActivity extends AppCompatActivity {
         String type = intent.getStringExtra("type");
         if ("lightning-cli".equals(type)) {
             mType = type;
+        } else if ("lncli".equals(type)) {
+            mType = type;
         } else {
             Log.e(TAG, "unknown type: " + type);
             finish();

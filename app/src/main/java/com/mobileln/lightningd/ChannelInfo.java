@@ -15,7 +15,8 @@ public class ChannelInfo {
     }
 
     public String channelId;
-    public String state;
+    public boolean closed;
+    public boolean active;
     public String name;
     // msatoshi_total
     public long channelTotalSat;
@@ -24,10 +25,11 @@ public class ChannelInfo {
     // msatoshi_to_us
     public long oppBal;
 
-    public ChannelInfo(String channelId, String state, String name, long channelTotalSat,
+    public ChannelInfo(String channelId, boolean closed, boolean active, String name, long channelTotalSat,
             long oppBal, long myBal) {
         this.channelId = channelId;
-        this.state = state;
+        this.closed = closed;
+        this.active = active;
         this.name = name;
         this.channelTotalSat = channelTotalSat;
         this.oppBal = oppBal;

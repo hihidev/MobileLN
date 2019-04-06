@@ -31,7 +31,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-import com.mobileln.bitcoind.BitcoinCli;
 import com.mobileln.lightningd.LightningClient;
 import com.mobileln.utils.BtcSatUtils;
 import com.mobileln.utils.QRUtils;
@@ -142,10 +141,11 @@ public class BitcoinWalletActivity extends AppCompatActivity {
             public void run() {
                 while (mUpdateUiThread == this) {
                     try {
-                        final long unconfirmedBtcBalance = BitcoinCli.getUnconfirmedBalance(
-                                NodeService.getMinConfirmation());
+                        final long unconfirmedBtcBalance =
+                                LightningClient.newInstance().getUnconfirmedOnChainBalance(
+                                        NodeService.getMinConfirmation());
                         final long confirmedBalance =
-                                LightningClient.newInstance().getConfirmedBtcBalanceInWallet();
+                                LightningClient.newInstance().getConfirmedOnChainBalance();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -175,8 +175,7 @@ public class BitcoinWalletActivity extends AppCompatActivity {
             @Override
             protected String doInBackground(Void... voids) {
                 try {
-                    String[] addresses = LightningClient.newInstance().getMyBech32Addresses();
-                    return addresses[addresses.length - 1];
+                    return LightningClient.newInstance().getMyBech32Address();
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(BitcoinWalletActivity.this, e.getMessage());
                     return null;

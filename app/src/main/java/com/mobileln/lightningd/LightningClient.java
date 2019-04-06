@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.mobileln.MyApplication;
 import com.mobileln.lightningd.clightning.CLightningClient;
+import com.mobileln.lightningd.lnd.LndClient;
 import com.mobileln.utils.SettingsSharedPrefs;
 
 import org.json.JSONException;
@@ -16,12 +17,15 @@ public class LightningClient implements LightningClientInterface {
     private LightningClientInterface mImpl;
 
     private LightningClient(boolean redirectError) {
-        boolean useLnd = new SettingsSharedPrefs(MyApplication.getContext()).isBackendLnd();
-        if (useLnd) {
-
+        if (useLnd()) {
+            mImpl = new LndClient(redirectError);
         } else {
             mImpl = new CLightningClient(redirectError);
         }
+    }
+
+    public static boolean useLnd() {
+        return new SettingsSharedPrefs(MyApplication.getContext()).isBackendLnd();
     }
 
     public static LightningClient newInstance() {
@@ -54,13 +58,18 @@ public class LightningClient implements LightningClientInterface {
     }
 
     @Override
-    public long getConfirmedBtcBalanceInWallet() throws IOException, JSONException {
-        return mImpl.getConfirmedBtcBalanceInWallet();
+    public String getMyBech32Address() throws IOException, JSONException {
+        return mImpl.getMyBech32Address();
     }
 
     @Override
-    public long getConfirmedBalanceInChannels() throws IOException, JSONException {
-        return mImpl.getConfirmedBalanceInChannels();
+    public long getConfirmedOnChainBalance() throws IOException, JSONException {
+        return mImpl.getConfirmedOnChainBalance();
+    }
+
+    @Override
+    public long getBalanceInChannels() throws IOException, JSONException {
+        return mImpl.getBalanceInChannels();
     }
 
     @Override
@@ -100,7 +109,7 @@ public class LightningClient implements LightningClientInterface {
 
     @Override
     public PaymentInfo getDecodedInvoice(String invoice) throws IOException, JSONException {
-        return mImpl.getInvoiceInfo(invoice);
+        return mImpl.getDecodedInvoice(invoice);
     }
 
     @Override
@@ -147,5 +156,15 @@ public class LightningClient implements LightningClientInterface {
     @Override
     public String[] getListAddrs(int maxIndex) throws IOException, JSONException {
         return mImpl.getListAddrs(maxIndex);
+    }
+
+    @Override
+    public long getCachedUnconfirmedOnChainBalance() {
+        return mImpl.getCachedUnconfirmedOnChainBalance();
+    }
+
+    @Override
+    public long getUnconfirmedOnChainBalance(int minConfirmation) throws IOException, JSONException {
+        return mImpl.getUnconfirmedOnChainBalance(minConfirmation);
     }
 }

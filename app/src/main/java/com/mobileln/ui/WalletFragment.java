@@ -32,7 +32,6 @@ import com.mobileln.MyApplication;
 import com.mobileln.NodeService;
 import com.mobileln.R;
 import com.mobileln.SettingsActivity;
-import com.mobileln.bitcoind.BitcoinCli;
 import com.mobileln.bitcoind.BitcoindConfig;
 import com.mobileln.bitcoind.BitcoindState;
 import com.mobileln.lightningd.LightningClient;
@@ -119,7 +118,8 @@ public class WalletFragment extends Fragment {
             case NodeService.NodeState.ALL_DISCONNECTED:
                 return getString(R.string.text_node_status_disconnected);
             case NodeService.NodeState.DOWNLOAD_FASTSYNC:
-                final double progress = FastSyncUtils.downloadProgress(MyApplication.getContext()) * 100;
+                final double progress = FastSyncUtils.downloadProgress(MyApplication.getContext())
+                        * 100;
                 return String.format("%s%.4f%%",
                         getString(R.string.text_node_status_fast_sync_bitcoin), progress);
             case NodeService.NodeState.STARTING_BITCOIND:
@@ -178,14 +178,15 @@ public class WalletFragment extends Fragment {
         if (activity == null) {
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_MaterialComponents_Light_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity,
+                R.style.Theme_MaterialComponents_Light_Dialog_Alert);
         builder.setTitle(R.string.dialog_question_ln_service_title).setMessage(
                 R.string.dialog_question_setup_config).setPositiveButton(
                 "Yes(Fast sync)", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         try {
-                            new SettingsSharedPrefs(getContext()).setBackendIsLnd(true);
+                            new SettingsSharedPrefs(getContext()).setBackendIsLnd(false);
                             Map<String, String> map = BitcoindConfig.readDefaultConfig();
                             BitcoindConfig.saveConfig(MyApplication.getContext(), map);
                             LightningdConfig.saveDefaultConfig(MyApplication.getContext());
@@ -336,7 +337,7 @@ public class WalletFragment extends Fragment {
         });
         long cachedChannelBal = LightningClient.newInstance().getCachedInChannelBalance();
         long cachedChainBal = LightningClient.newInstance().getCachedOnChainBalance()
-                + BitcoinCli.getCachedUnconfirmedBalance();
+                + LightningClient.newInstance().getCachedUnconfirmedOnChainBalance();
         if (cachedChannelBal >= 0 && cachedChainBal >= 0) {
             updateBalanceUI(cachedChannelBal, cachedChainBal);
         }
@@ -368,10 +369,11 @@ public class WalletFragment extends Fragment {
             @Override
             protected Pair<Long, Long> doInBackground(Void... voids) {
                 try {
-                    long channelBalance = LightningClient.newInstance().getConfirmedBalanceInChannels();
-                    long btcBalance = LightningClient.newInstance().getConfirmedBtcBalanceInWallet();
-                    long unconfirmedBtcBalance = BitcoinCli.getUnconfirmedBalance(
-                            NodeService.getMinConfirmation());
+                    long channelBalance = LightningClient.newInstance().getBalanceInChannels();
+                    long btcBalance = LightningClient.newInstance().getConfirmedOnChainBalance();
+                    long unconfirmedBtcBalance =
+                            LightningClient.newInstance().getUnconfirmedOnChainBalance(
+                                    NodeService.getMinConfirmation());
                     return Pair.create(channelBalance, btcBalance + unconfirmedBtcBalance);
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(getActivity(), e.getMessage());
