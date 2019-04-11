@@ -19,7 +19,7 @@ public class BitcoindConfig {
     static {
         HashMap<String, String> map = new HashMap<>();
         map.put("maxconnections", "40");
-        map.put("maxuploadtarget", "10");
+        map.put("maxuploadtarget", "1");
         map.put("dbcache", "100");
         map.put("maxorphantx", "10");
         map.put("maxmempool", "50");

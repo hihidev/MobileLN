@@ -25,7 +25,7 @@ public class LightningClient implements LightningClientInterface {
     }
 
     public static boolean useLnd() {
-        return new SettingsSharedPrefs(MyApplication.getContext()).isBackendLnd();
+        return SettingsSharedPrefs.getInstance(MyApplication.getContext()).isBackendLnd();
     }
 
     public static LightningClient newInstance() {
@@ -58,8 +58,13 @@ public class LightningClient implements LightningClientInterface {
     }
 
     @Override
-    public String getMyBech32Address() throws IOException, JSONException {
-        return mImpl.getMyBech32Address();
+    public String newBech32Address() throws IOException, JSONException {
+        return mImpl.newBech32Address();
+    }
+
+    @Override
+    public String getGeneratedBech32Address() throws IOException, JSONException {
+        return mImpl.getGeneratedBech32Address();
     }
 
     @Override

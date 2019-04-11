@@ -12,7 +12,7 @@ import java.io.IOException;
 public class Lightningd {
 
     private static boolean isLnd() {
-        boolean useLnd = new SettingsSharedPrefs(MyApplication.getContext()).isBackendLnd();
+        boolean useLnd = SettingsSharedPrefs.getInstance(MyApplication.getContext()).isBackendLnd();
         return useLnd;
     }
 

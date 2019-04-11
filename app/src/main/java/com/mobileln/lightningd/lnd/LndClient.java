@@ -130,13 +130,18 @@ public class LndClient extends ProcessHelper implements LightningClientInterface
     }
 
     @WorkerThread
-    public String getMyBech32Address() throws IOException, JSONException {
+    public String newBech32Address() throws IOException, JSONException {
         if (sCachedMyAddress == null) {
             JSONObject json = getJSONResponse(MyApplication.getContext(),
                     new String[]{"newaddress", "p2wkh"});
             sCachedMyAddress = json.getString("address");
         }
         return sCachedMyAddress;
+    }
+
+    @Override
+    public String getGeneratedBech32Address() throws IOException, JSONException {
+        throw new IllegalStateException("Not implemented");
     }
 
     @Override

@@ -94,7 +94,7 @@ public class DebugActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         try {
-                            ExtractResourceUtils.extractExecutablesIfNecessary(DebugActivity.this, true);
+                            ExtractResourceUtils.extractExecutables(DebugActivity.this);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

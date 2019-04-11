@@ -35,8 +35,8 @@ public class ChannelSetupActivity extends AppCompatActivity {
 
     private static final String TAG = "ChannelSetupActivity";
     private static final String TEST_NODE_ADDR =
-            "0260d9119979caedc570ada883ff614c6efb93f7f7382e25d73ecbeba0b62df2d7@lnd.fun:9735";
-    private static final String TEST_NODE_DEFAULT_DEPOSIT = "50000";
+            "0336ab645788deef1b61b780d79c4f276293ea291fab2c49bb25cbed203da16d7d@testnet.mobileln.com:9735";
+    private static final String TEST_NODE_DEFAULT_DEPOSIT = "100000";
 
     private ListView mListView;
     private TextView mCreateChannelPeerAddrTextView;
@@ -148,7 +148,7 @@ public class ChannelSetupActivity extends AppCompatActivity {
             }
             viewHolder.channelName.setText(channelInfo.name);
             viewHolder.channelColor.setCardBackgroundColor(channelInfo.active ? 0xFF00FF00
-                            : 0xFFFFFF00);
+                    : 0xFFFFFF00);
             viewHolder.myBal.setText("Outbound cap:" + channelInfo.myBal);
             viewHolder.oppBal.setText("Inbound cap:" + channelInfo.oppBal);
             viewHolder.channelId = channelInfo.channelId;

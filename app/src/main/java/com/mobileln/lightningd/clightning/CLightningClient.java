@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.mobileln.MyApplication;
 import com.mobileln.bitcoind.BitcoinCli;
@@ -30,6 +31,7 @@ public class CLightningClient extends ProcessHelper implements LightningClientIn
     private static volatile long sCachedInChannelBalance = -1;
     private static volatile long sCachedOnChainBalance = -1;
     private static volatile long sCachedUnconfirmedOnChainBalance = -1;
+    private static volatile String[] sCachedGeneratedBech32Address = null;
 
     public CLightningClient(boolean redirectError) {
         super(redirectError);
@@ -124,16 +126,22 @@ public class CLightningClient extends ProcessHelper implements LightningClientIn
         for (int i = 0; i < result.length; i++) {
             result[i] = jsonArray.getJSONObject(i).getString("bech32");
         }
+        // TODO: deep copy
+        sCachedGeneratedBech32Address = result;
         return result;
     }
 
     @WorkerThread
-    public String getMyBech32Address() throws IOException, JSONException {
-        String[] addresses = getMyBech32Addresses();
-        if (addresses == null || addresses.length == 0) {
-            return null;
-        }
-        return addresses[addresses.length -1];
+    public String newBech32Address() throws IOException, JSONException {
+        JSONObject json = getJSONResponse(MyApplication.getContext(),
+                new String[]{"newaddr"});
+        return json.getString("address");
+    }
+
+    @Override
+    public String getGeneratedBech32Address() throws IOException, JSONException {
+        int len = sCachedGeneratedBech32Address.length;
+        return sCachedGeneratedBech32Address[new Random().nextInt(len)];
     }
 
     @WorkerThread
@@ -332,8 +340,10 @@ public class CLightningClient extends ProcessHelper implements LightningClientIn
             for (int j = 0; j < channelsLen; j++) {
                 JSONObject channel = channels.getJSONObject(j);
                 String channelId = channel.getString("channel_id");
-                boolean closed = (channel.getString("state") == ChannelInfo.State.CLOSINGD_COMPLETE);
-                boolean active = (channel.getString("state") == ChannelInfo.State.CHANNELD_NORMAL);
+                boolean closed = ChannelInfo.State.CLOSINGD_COMPLETE.equals(
+                        channel.getString("state"));
+                boolean active = ChannelInfo.State.CHANNELD_NORMAL.equals(
+                        channel.getString("state"));
                 String name = "[" + channel.getString("state") + "]" + channel.optString("owner");
                 long channelTotalSat = channel.getLong("msatoshi_total") / 1000;
                 long outCapacitySat = channel.getLong("msatoshi_to_us") / 1000;

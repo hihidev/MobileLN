@@ -17,27 +17,6 @@ import com.mobileln.R;
 public class ExtractResourceUtils {
 
     private static final String TAG = "ExtractResourceUtils";
-    private static final String LAST_EXECUTABLE_VERSION = "last_executable_version";
-
-    public static boolean requiresUpdate(Context context) {
-        int currentVersion = context.getResources().getInteger(
-                R.integer.current_executable_version);
-        SharedPreferences sp = context.getSharedPreferences(LAST_EXECUTABLE_VERSION,
-                Context.MODE_PRIVATE);
-        int lastVersion = sp.getInt(LAST_EXECUTABLE_VERSION, 0);
-        Log.i(TAG, "Last executable version: " + lastVersion);
-        Log.i(TAG, "Current executable version: " + currentVersion);
-        return currentVersion > lastVersion;
-    }
-
-    private static void updateLastExecutableVersion(Context context) {
-        int currentVersion = context.getResources().getInteger(
-                R.integer.current_executable_version);
-        SharedPreferences sp = context.getSharedPreferences(LAST_EXECUTABLE_VERSION,
-                Context.MODE_PRIVATE);
-        sp.edit().putInt(LAST_EXECUTABLE_VERSION, currentVersion).apply();
-        Log.i(TAG, "Updated executable to version: " + currentVersion);
-    }
 
     private static void removeAllExecutables(Context context) throws IOException {
         String executableFolder = FileUtils.getNativeExecutablesFolder(context);
@@ -102,14 +81,9 @@ public class ExtractResourceUtils {
         }
     }
 
-    public synchronized static void extractExecutablesIfNecessary(Context context, boolean force)
+    public synchronized static void extractExecutables(Context context)
             throws IOException {
-        if (!force && !requiresUpdate(context)) {
-            return;
-        }
-        Log.i(TAG, "Requires update executables");
         removeAllExecutables(context);
         extractAllExecutables(context);
-        updateLastExecutableVersion(context);
     }
 }

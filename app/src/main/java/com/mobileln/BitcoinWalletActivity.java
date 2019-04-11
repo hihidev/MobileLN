@@ -175,7 +175,7 @@ public class BitcoinWalletActivity extends AppCompatActivity {
             @Override
             protected String doInBackground(Void... voids) {
                 try {
-                    return LightningClient.newInstance().getMyBech32Address();
+                    return LightningClient.newInstance().getGeneratedBech32Address();
                 } catch (IOException | JSONException e) {
                     UIUtils.showErrorToast(BitcoinWalletActivity.this, e.getMessage());
                     return null;

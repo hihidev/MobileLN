@@ -23,7 +23,10 @@ public interface LightningClientInterface {
     String[] getMyBech32Addresses() throws IOException, JSONException;
 
     @WorkerThread
-    String getMyBech32Address() throws IOException, JSONException;
+    String newBech32Address() throws IOException, JSONException;
+
+    @WorkerThread
+    String getGeneratedBech32Address() throws IOException, JSONException;
 
     @WorkerThread
     long getConfirmedOnChainBalance() throws IOException, JSONException;

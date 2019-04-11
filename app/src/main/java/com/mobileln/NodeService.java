@@ -200,6 +200,22 @@ public class NodeService extends Service {
                                 }
                             }
                         }
+                        // Generate 100 address caches...may cause performance issue if there're
+                        // too many.
+                        while (true) {
+                            String[] addresses =
+                                    LightningClient.newInstance().getMyBech32Addresses();
+                            if (addresses == null) {
+                                continue;
+                            }
+                            if (addresses.length >= 100) {
+                                break;
+                            }
+                            int remainGen = 100 - addresses.length;
+                            for (int j = 0; j < remainGen; j++) {
+                                LightningClient.newInstance().newBech32Address();
+                            }
+                        }
                     }
 
                     setCurrentState(NodeState.ALL_READY, false);

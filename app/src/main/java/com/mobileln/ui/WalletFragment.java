@@ -185,21 +185,15 @@ public class WalletFragment extends Fragment {
                 "Yes(Fast sync)", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        try {
-                            new SettingsSharedPrefs(getContext()).setBackendIsLnd(false);
-                            Map<String, String> map = BitcoindConfig.readDefaultConfig();
-                            BitcoindConfig.saveConfig(MyApplication.getContext(), map);
-                            LightningdConfig.saveDefaultConfig(MyApplication.getContext());
-                            FastSyncUtils.savePendingFastSyncWork(MyApplication.getContext(), true);
-                            if (NodeService.isRunning()) {
-                                Log.w(TAG, "Node shouldn't be running?");
-                            } else {
-                                updateServiceStatusDialog();
-                                mServiceStatusDialog.show();
-                                NodeService.startNodeService(MyApplication.getContext());
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        SettingsSharedPrefs.getInstance(
+                                MyApplication.getContext()).setUseDefaultConfigs(true);
+                        FastSyncUtils.savePendingFastSyncWork(MyApplication.getContext(), true);
+                        if (NodeService.isRunning()) {
+                            Log.w(TAG, "Node shouldn't be running?");
+                        } else {
+                            updateServiceStatusDialog();
+                            mServiceStatusDialog.show();
+                            NodeService.startNodeService(MyApplication.getContext());
                         }
                     }
                 })
@@ -212,6 +206,8 @@ public class WalletFragment extends Fragment {
                                     map.remove("assumevalid");
                                     BitcoindConfig.saveConfig(MyApplication.getContext(), map);
                                     LightningdConfig.saveDefaultConfig(MyApplication.getContext());
+                                    SettingsSharedPrefs.getInstance(
+                                            MyApplication.getContext()).setUseDefaultConfigs(false);
                                     if (NodeService.isRunning()) {
                                         Log.w(TAG, "Node shouldn't be running?");
                                     } else {
