@@ -6,8 +6,8 @@ android {
         applicationId "com.mobileln"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 9
-        versionName "pre-alpha v0.2"
+        versionCode 10
+        versionName "pre-alpha v0.2a"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     useLibrary 'org.apache.http.legacy'
