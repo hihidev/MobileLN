@@ -13,6 +13,7 @@ public class SettingsSharedPrefs {
     private static final String LIGHTNINGD_BACKEND_LND = "lnd";
     private static final String USE_DEFAULT_CONFIGS = "use_default_configs";
     private static final String LAST_APP_VERSION = "last_app_version";
+    private static final String SETUP_DONE = "setup_done";
 
     private static SharedPreferences mSharedPreferences;
     private static SettingsSharedPrefs sInstance;
@@ -55,7 +56,19 @@ public class SettingsSharedPrefs {
         return BuildConfig.VERSION_CODE == lastAppVersion;
     }
 
+    public long getLastAppVersion() {
+        return mSharedPreferences.getLong(LAST_APP_VERSION, -1);
+    }
+
     public void setAppUpdated() {
         mSharedPreferences.edit().putLong(LAST_APP_VERSION, BuildConfig.VERSION_CODE).apply();
+    }
+
+    public boolean isSetupDone() {
+        return mSharedPreferences.getBoolean(SETUP_DONE, false);
+    }
+
+    public void setSetupDone(boolean done) {
+        mSharedPreferences.edit().putBoolean(SETUP_DONE, done).apply();
     }
 }

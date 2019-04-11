@@ -195,6 +195,7 @@ public class WalletFragment extends Fragment {
                             mServiceStatusDialog.show();
                             NodeService.startNodeService(MyApplication.getContext());
                         }
+                        SettingsSharedPrefs.getInstance(getContext()).setSetupDone(true);
                     }
                 })
                 .setNegativeButton("Yes(Full slow sync)",
@@ -218,13 +219,14 @@ public class WalletFragment extends Fragment {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
+                                SettingsSharedPrefs.getInstance(getContext()).setSetupDone(true);
                             }
                         })
                 .setNeutralButton(R.string.dialog_question_no,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-
+                                SettingsSharedPrefs.getInstance(getContext()).setSetupDone(true);
                             }
                         }).show();
     }
@@ -315,7 +317,7 @@ public class WalletFragment extends Fragment {
         mServiceStatusCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isNodeConfigValid()) {
+                if (!SettingsSharedPrefs.getInstance(getContext()).isSetupDone()) {
                     showSetupConfigDialog();
                 } else {
                     updateServiceStatusDialog();
