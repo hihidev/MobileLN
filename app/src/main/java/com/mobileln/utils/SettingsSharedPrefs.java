@@ -52,7 +52,7 @@ public class SettingsSharedPrefs {
 
     public boolean isAppUpdated() {
         long lastAppVersion = mSharedPreferences.getLong(LAST_APP_VERSION, -1);
-        return BuildConfig.VERSION_CODE != lastAppVersion;
+        return BuildConfig.VERSION_CODE == lastAppVersion;
     }
 
     public void setAppUpdated() {
